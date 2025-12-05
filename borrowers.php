@@ -7,7 +7,8 @@
 				<large class="card-title">
 					<b>Borrower List</b>
 				</large>
-				<button class="btn btn-primary col-md-2 float-right" type="button" id="new_borrower"><i class="fa fa-plus"></i> New Borrower</button>
+				<button class="btn btn-primary col-md-2 float-right" type="button" id="new_borrower"><i
+						class="fa fa-plus"></i> New Borrower</button>
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered" id="borrower-list">
@@ -26,35 +27,37 @@
 							<th class="text-center">Next Payment Schedule</th>
 							<th class="text-center">Action</th>
 						</tr>
-					</thead><!--  Author Name: Mayuri K. 
- for any PHP, Codeignitor, Laravel OR Python work contact me at mayuri.infospace@gmail.com  
- Visit website : www.mayurik.com -->  
+					</thead>
 					<tbody>
 						<?php
 						$i = 1;
-							$qry = $conn->query("SELECT * FROM borrowers order by id desc");
-							while($row = $qry->fetch_assoc()):
+						$qry = $conn->query("SELECT * FROM borrowers order by id desc");
+						while ($row = $qry->fetch_assoc()):
 
-						 ?>
-						 <tr>
-						 	
-						 	<td class="text-center"><?php echo $i++ ?></td>
-						 	<td>
-						 		<p>Name :<b><?php echo ucwords($row['lastname'].", ".$row['firstname'].' '.$row['middlename']) ?></b></p>
-						 		<p>Address :<b><?php echo $row['address'] ?></b></p>
-						 		<p>Contact # :<b><?php echo $row['contact_no'] ?></b></p>
-						 		<p>Email :<b><?php echo $row['email'] ?></b></p>
-						 		<p>Tax ID :<b><?php echo $row['tax_id'] ?></b></p>
-						 		
-						 	</td>
-						 	<td class="">None</td>
-						 	<td class="">N/A</td>
-						 	<td class="text-center">
-						 			<button class="btn btn-primary edit_borrower" type="button" data-id="<?php echo $row['id'] ?>"><i class="fa fa-edit"></i></button>
-						 			<button class="btn btn-danger delete_borrower" type="button" data-id="<?php echo $row['id'] ?>"><i class="fa fa-trash"></i></button>
-						 	</td>
+							?>
+							<tr>
 
-						 </tr>
+								<td class="text-center"><?php echo $i++ ?></td>
+								<td>
+									<p>Name
+										:<b><?php echo ucwords($row['lastname'] . ", " . $row['firstname'] . ' ' . $row['middlename']) ?></b>
+									</p>
+									<p>Address :<b><?php echo $row['address'] ?></b></p>
+									<p>Contact # :<b><?php echo $row['contact_no'] ?></b></p>
+									<p>Email :<b><?php echo $row['email'] ?></b></p>
+									<p>Tax ID :<b><?php echo $row['tax_id'] ?></b></p>
+
+								</td>
+								<td class="">None</td>
+								<td class="">N/A</td>
+								<td class="text-center">
+									<button class="btn btn-primary edit_borrower" type="button"
+										data-id="<?php echo $row['id'] ?>"><i class="fa fa-edit"></i></button>
+									<button class="btn btn-danger delete_borrower" type="button"
+										data-id="<?php echo $row['id'] ?>"><i class="fa fa-trash"></i></button>
+								</td>
+
+							</tr>
 
 						<?php endwhile; ?>
 					</tbody>
@@ -62,44 +65,44 @@
 			</div>
 		</div>
 	</div>
-</div><!--  Author Name: Mayuri K. 
- for any PHP, Codeignitor, Laravel OR Python work contact me at mayuri.infospace@gmail.com  
- Visit website : www.mayurik.com -->  
+</div>
 <style>
 	td p {
-		margin:unset;
+		margin: unset;
 	}
+
 	td img {
-	    width: 8vw;
-	    height: 12vh;
+		width: 8vw;
+		height: 12vh;
 	}
-	td{
+
+	td {
 		vertical-align: middle !important;
 	}
-</style>	
+</style>
 <script>
 	$('#borrower-list').dataTable()
-	$('#new_borrower').click(function(){
-		uni_modal("New borrower","manage_borrower.php",'mid-large')
+	$('#new_borrower').click(function () {
+		uni_modal("New borrower", "manage_borrower.php", 'mid-large')
 	})
-	$('.edit_borrower').click(function(){
-		uni_modal("Edit borrower","manage_borrower.php?id="+$(this).attr('data-id'),'mid-large')
+	$('.edit_borrower').click(function () {
+		uni_modal("Edit borrower", "manage_borrower.php?id=" + $(this).attr('data-id'), 'mid-large')
 	})
-	$('.delete_borrower').click(function(){
-		_conf("Are you sure to delete this borrower?","delete_borrower",[$(this).attr('data-id')])
+	$('.delete_borrower').click(function () {
+		_conf("Are you sure to delete this borrower?", "delete_borrower", [$(this).attr('data-id')])
 	})
-function delete_borrower($id){
+	function delete_borrower($id) {
 		start_load()
 		$.ajax({
-			url:'ajax.php?action=delete_borrower',
-			method:'POST',
-			data:{id:$id},
-			success:function(resp){
-				if(resp==1){
-					alert_toast("borrower successfully deleted",'success')
-					setTimeout(function(){
+			url: 'ajax.php?action=delete_borrower',
+			method: 'POST',
+			data: { id: $id },
+			success: function (resp) {
+				if (resp == 1) {
+					alert_toast("borrower successfully deleted", 'success')
+					setTimeout(function () {
 						location.reload()
-					},1500)
+					}, 1500)
 
 				}
 			}
