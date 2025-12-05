@@ -1,4 +1,8 @@
-<?php include 'db_connect.php' ?>
+<?php include 'db_connect.php';
+include 'admin_class.php';
+if (!Action::hasPermission('manage_loans')) {
+	die('Forbidden');
+} ?>
 
 <div class="container-fluid">
 	<div class="col-lg-12">

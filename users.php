@@ -2,67 +2,85 @@
 
 ?>
 
+<?php include 'db_connect.php';
+include 'admin_class.php';
+if (!Action::hasPermission('manage_users')) {
+	die('Forbidden');
+} ?>
 
 
 <div class="container-fluid">
 	<div class="col-lg-12">
 		<div class="card">
-			<div class="card-header">
-				<large class="card-title">
-					<b>Users</b>
-				</large>
-				<button class="btn btn-primary float-right" id="new_user"><i class="fa fa-plus"></i> New user</button>
+			<div class="card-header d-flex justify-content-between align-items-center">
+				<div>
+					<div class="card-title mb-0"><b>Users</b></div>
+					<small class="text-muted">Manage application users and access</small>
+				</div>
+				<div>
+					<button class="btn btn-primary" id="new_user"><i class="fa fa-plus"></i> New user</button>
+				</div>
 			</div>
 			<div class="card-body">
-				<table class="table-striped table-bordered col-md-12">
-					<thead>
-						<tr>
-							<th class="text-center">#</th>
-							<th class="text-center">Name</th>
-							<th class="text-center">Username</th>
-							<th class="text-center">Action</th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php
-						include 'db_connect.php';
-						$users = $conn->query("SELECT * FROM users order by name asc");
-						$i = 1;
-						while ($row = $users->fetch_assoc()):
-							?>
+				<div class="table-responsive">
+					<table class="table table-striped table-bordered">
+						<thead>
 							<tr>
-								<td>
-									<?php echo $i++ ?>
-								</td>
-								<td>
-									<?php echo $row['name'] ?>
-								</td>
-								<td>
-									<?php echo $row['username'] ?>
-								</td>
-								<td>
-									<center>
-										<div class="btn-group">
-											<button type="button" class="btn btn-primary">Action</button>
-											<button type="button"
-												class="btn btn-primary dropdown-toggle dropdown-toggle-split"
-												data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-												<span class="sr-only">Toggle Dropdown</span>
-											</button>
-											<div class="dropdown-menu">
-												<a class="dropdown-item edit_user" href="javascript:void(0)"
-													data-id='<?php echo $row['id'] ?>'>Edit</a>
-												<div class="dropdown-divider"></div>
-												<a class="dropdown-item delete_user" href="javascript:void(0)"
-													data-id='<?php echo $row['id'] ?>'>Delete</a>
-											</div>
-										</div>
-									</center>
-								</td>
+								<th class="text-center">#</th>
+								<th class="text-center">Name</th>
+								<th class="text-center">Username</th>
+								<th class="text-center">Email</th>
+								<th class="text-center">Phone</th>
+								<th class="text-center">Role</th>
+								<th class="text-center">Action</th>
 							</tr>
-						<?php endwhile; ?>
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							<?php
+							$users = $conn->query("SELECT id, name, username, email, phone, role FROM users ORDER BY name ASC");
+							$i = 1;
+							while ($row = $users->fetch_assoc()):
+								?>
+								<tr>
+									<td>
+										<?php echo $i++ ?>
+									</td>
+									<td>
+										<?php echo $row['name'] ?>
+									</td>
+									<td>
+										<?php echo $row['username'] ?>
+									<td>
+										<?php echo isset($row['email']) ? $row['email'] : '' ?>
+									</td>
+									<td>
+										<?php echo isset($row['phone']) ? $row['phone'] : '' ?>
+									</td>
+									<td>
+										<?php echo isset($row['role']) ? $row['role'] : '' ?>
+									</td>
+									<td>
+										<center>
+											<div class="btn-group">
+												<button type="button" class="btn btn-primary dropdown-toggle"
+													data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+													Action
+												</button>
+												<div class="dropdown-menu">
+													<a class="dropdown-item edit_user" href="javascript:void(0)"
+														data-id='<?php echo $row['id'] ?>'>Edit</a>
+													<div class="dropdown-divider"></div>
+													<a class="dropdown-item delete_user" href="javascript:void(0)"
+														data-id='<?php echo $row['id'] ?>'>Delete</a>
+												</div>
+											</div>
+										</center>
+									</td>
+								</tr>
+							<?php endwhile; ?>
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 	</div>
