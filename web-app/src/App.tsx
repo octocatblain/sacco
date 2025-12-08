@@ -1,4 +1,5 @@
 import { FC, useState } from "react";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import { Outlet } from "react-router-dom";
 // components
 import NavBar from "./components/NavBar";
@@ -10,9 +11,8 @@ const App: FC = () => {
   const handleMobileMenuToggle = () => {
     setShowMobileMenu(!showMobileMenu);
   };
-
   return (
-    <>
+    <NotificationProvider>
       <NavBar
         showMobileMenu={showMobileMenu}
         handleMobileMenuToggle={handleMobileMenuToggle}
@@ -32,12 +32,12 @@ const App: FC = () => {
             </ul>
           </div>
         )}
-      
+
         <div className="col-span-10 bg-white dark:bg-blue-950 dark:text-slate-300 py-4 px-8">
           <Outlet />
         </div>
       </div>
-    </>
+    </NotificationProvider>
   );
 };
 

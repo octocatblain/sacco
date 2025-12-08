@@ -6,6 +6,7 @@ import ProfilePlaceholder from "@/assets/profile-placeholder.png";
 import Logo from "@/assets/open-sacco.png";
 // components
 import LucideIcon from "./LucideIcon";
+import NotificationBell from "./NotificationBell";
 // context and custom hook
 import { ThemeContext } from "@/contexts/ThemeContext";
 import { useUserProfileInfo } from "@/hooks/useUserProfile";
@@ -86,8 +87,9 @@ const NavBar: FC<NavBarProps> = ({
         </button>
       </div>
 
-      {/* Right: Theme toggle and profile */}
+      {/* Right: Notifications, Theme toggle and profile */}
       <div className="flex items-center gap-x-4">
+        <NotificationBell />
         <button
           onClick={toggleDarkTheme}
           className="inline-flex items-center justify-center p-2 rounded-md hover:bg-white/20"

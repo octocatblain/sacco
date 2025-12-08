@@ -65,6 +65,18 @@ export type LoanProps = {
   date_approved: Date;
 };
 
+// Notifications
+export type NotificationType = "info" | "success" | "warning" | "error";
+
+export interface NotificationItem {
+  id: string;
+  title: string;
+  message?: string;
+  type: NotificationType;
+  createdAt: number; // epoch ms
+  read: boolean;
+}
+
 // types/auth.ts
 export interface User {
   id: number;
