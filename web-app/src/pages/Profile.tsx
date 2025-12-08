@@ -1,4 +1,4 @@
-import React, {  useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import axios from "axios";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -40,7 +40,7 @@ const formSchema = z.object({
 const Profile = () => {
   const { profile } = useUserProfileInfo();
   const [loading, setLoading] = useState(false);
-  const [preview, setPreview] = useState('');
+  const [preview, setPreview] = useState("");
 
   const imageInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -63,7 +63,7 @@ const Profile = () => {
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
-    if(file){
+    if (file) {
       const imageUrl = URL.createObjectURL(file);
       setPreview(imageUrl);
       // form.setValue('profile.profile_image', file)
@@ -74,63 +74,62 @@ const Profile = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
     const TOKEN = localStorage.getItem("access_token");
- 
-//     const formData = new FormData()
-//     formData.append('username', values.username)
-//     formData.append('email', values.email)
-//    // Ensure profile_image is a valid File object
-//    if (values.profile.profile_image instanceof File) {
-//     formData.append('profile_image', values.profile.profile_image);
-// } else {
-//     console.error('profile_image is not a valid File object:', values.profile.profile_image);
-// }
+
+    //     const formData = new FormData()
+    //     formData.append('username', values.username)
+    //     formData.append('email', values.email)
+    //    // Ensure profile_image is a valid File object
+    //    if (values.profile.profile_image instanceof File) {
+    //     formData.append('profile_image', values.profile.profile_image);
+    // } else {
+    //     console.error('profile_image is not a valid File object:', values.profile.profile_image);
+    // }
 
     // Log FormData entries
-  //   for (let [key, value] of formData.entries()) {
-  //     console.log(`${key}:`, value);
-  // }
-setLoading(true)
-    try{
-    await axios.patch(`${apiBaseUrl}/api/profile/`, values, {
-      headers: {
-        Authorization: `Bearer ${TOKEN}`,
-        // "Content-Type": "application/json"
-        "Content-Type": "multipart/form-data",
-      },
-    })
-    setLoading(false)
-    console.log('Profile updated successfully')
-  } catch (error) {
-    setLoading(false)
-    console.log('error', error)
-  }
+    //   for (let [key, value] of formData.entries()) {
+    //     console.log(`${key}:`, value);
+    // }
+    setLoading(true);
+    try {
+      await axios.patch(`${apiBaseUrl}/api/profile/`, values, {
+        headers: {
+          Authorization: `Bearer ${TOKEN}`,
+          // "Content-Type": "application/json"
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setLoading(false);
+      console.log("Profile updated successfully");
+    } catch (error) {
+      setLoading(false);
+      console.log("error", error);
+    }
   };
 
   return (
-    <div className=" w-2/3 mx-auto mt-5">
-      <h1 className="text-2xl mb-2">Update Profile</h1>
-      <div className=" w-full flex justify-center items-center  border border-slate-950/25 dark:border-slate-400 rounded-md">
+    <div className="max-w-3xl mx-auto mt-6 px-4">
+      <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
+        Update Profile
+      </h1>
+      <div className="w-full rounded-2xl bg-white dark:bg-blue-950 border border-slate-200 dark:border-blue-700 shadow-sm p-6">
         <Form {...form}>
-          <form
-            className=" space-y-4 mb-5"
-            onSubmit={form.handleSubmit(onSubmit)}
-          >
-            <div className="relative ">
+          <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="relative flex flex-col items-center">
               <img
-              // src={preview ? preview : ProfilePlaceholder }
-              src={
-                preview
-                  ? preview
-                  : profile?.profile.profile_image
-                  ? `${apiBaseUrl}${profile?.profile.profile_image}`
-                  : ProfilePlaceholder
-              }
+                // src={preview ? preview : ProfilePlaceholder }
+                src={
+                  preview
+                    ? preview
+                    : profile?.profile.profile_image
+                    ? `${apiBaseUrl}${profile?.profile.profile_image}`
+                    : ProfilePlaceholder
+                }
                 alt="profile image"
-                className=" w-48 h-48 rounded-full mx-auto object-fill"
+                className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border border-slate-200 dark:border-blue-700"
               />
               <LucideIcon
                 name="Camera"
-                className="absolute bottom-4 right-12"
+                className="absolute bottom-2 right-10 cursor-pointer bg-white dark:bg-blue-900 rounded-full p-2 shadow ring-1 ring-black/5"
                 onClick={handleImageUpdate}
               />
             </div>
@@ -140,7 +139,7 @@ setLoading(true)
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
               render={({ field: { value, onChange, ...fieldProps } }) => (
                 <FormItem>
-                  <FormLabel>Profile Image:</FormLabel>
+                  <FormLabel>Profile Image</FormLabel>
                   <FormControl>
                     <Input
                       placeholder=""
@@ -163,7 +162,7 @@ setLoading(true)
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>User Name:</FormLabel>
+                  <FormLabel>Username</FormLabel>
                   <FormControl>
                     <Input
                       placeholder=""
@@ -180,7 +179,7 @@ setLoading(true)
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email:</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
                       placeholder=""
@@ -197,7 +196,7 @@ setLoading(true)
               name="profile.role_display"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role:</FormLabel>
+                  <FormLabel>Role</FormLabel>
                   <FormControl>
                     <Input
                       placeholder=""
@@ -213,7 +212,8 @@ setLoading(true)
             <Button
               type="submit"
               text={loading ? <Spinner /> : "Update Profile"}
-              className="w-full mb-8"
+              className="w-full"
+              variant="primary"
             />
           </form>
         </Form>

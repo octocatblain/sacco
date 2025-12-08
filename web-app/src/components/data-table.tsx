@@ -53,32 +53,41 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div>
-      <h1 className="text-2xl font-medium">{title}</h1>
-      <div className="flex flex-col md:flex-row justify-between items-center py-5 gap-y-4">
-        <Link className="self-start" to={route ? route : ""}>
-          <Button className="flex gap-x-2">
-            <CirclePlus size={18} />
-            {btnTitle}
-          </Button>
-        </Link>
-        <Input
-          placeholder="Search ..."
-          value={(table.getColumn(filters)?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn(filters)?.setFilterValue(event.target.value)
-          }
-          className="w-64 self-start md:self-auto"
-        />
+    <div className="rounded-lg border bg-white dark:bg-blue-900">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-center px-4 py-4 gap-3">
+        <h1 className="text-xl md:text-2xl font-semibold tracking-tight">
+          {title}
+        </h1>
+        <div className="flex w-full md:w-auto items-center gap-3">
+          <Input
+            placeholder="Search..."
+            value={(table.getColumn(filters)?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn(filters)?.setFilterValue(event.target.value)
+            }
+            className="w-full md:w-64"
+          />
+          <Link to={route ? route : ""}>
+            <Button className="flex gap-x-2 bg-primary text-black hover:opacity-90">
+              <CirclePlus size={18} />
+              {btnTitle}
+            </Button>
+          </Link>
+        </div>
       </div>
-      <div className="rounded-md border">
+      {/* Table */}
+      <div className="rounded-lg border-t">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      className="bg-slate-50 dark:bg-blue-950 text-slate-700 dark:text-slate-200"
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -99,7 +108,7 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="py-3">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -112,7 +121,7 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-slate-500"
                 >
                   No results.
                 </TableCell>
@@ -121,47 +130,48 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex justify-between my-5">
-        <div className="space-x-3">
+      {/* Pagination */}
+      <div className="flex flex-col md:flex-row items-center justify-between px-4 py-4 gap-3">
+        <div className="flex items-center gap-2">
           <button
-            className="border rounded p-2"
+            className="px-3 py-2 rounded-md border bg-white hover:bg-slate-50 disabled:opacity-50"
             onClick={() => table.firstPage()}
             disabled={!table.getCanPreviousPage()}
           >
             {"<<"}
           </button>
           <button
-            className="border rounded p-2"
+            className="px-3 py-2 rounded-md border bg-white hover:bg-slate-50 disabled:opacity-50"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             {"<"}
           </button>
           <button
-            className="border rounded p-2"
+            className="px-3 py-2 rounded-md border bg-white hover:bg-slate-50 disabled:opacity-50"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
             {">"}
           </button>
           <button
-            className="border rounded p-2"
+            className="px-3 py-2 rounded-md border bg-white hover:bg-slate-50 disabled:opacity-50"
             onClick={() => table.lastPage()}
             disabled={!table.getCanNextPage()}
           >
             {">>"}
           </button>
         </div>
-        <div className="flex gap-x-3">
+        <div className="flex items-center gap-3 text-sm">
           <span className="flex items-center gap-1">
-            <div>Page</div>
+            <span>Page</span>
             <strong>
               {table.getState().pagination.pageIndex + 1} of{" "}
               {table.getPageCount().toLocaleString()}
             </strong>
           </span>
           <span className="flex items-center gap-1">
-            | Go to page:
+            <span>| Go to page:</span>
             <input
               type="number"
               min="1"
@@ -171,7 +181,7 @@ export function DataTable<TData, TValue>({
                 const page = e.target.value ? Number(e.target.value) - 1 : 0;
                 table.setPageIndex(page);
               }}
-              className="border p-1 rounded w-16 dark:bg-blue-900"
+              className="border px-2 py-1 rounded w-16 dark:bg-blue-900"
             />
           </span>
           <select
@@ -179,7 +189,7 @@ export function DataTable<TData, TValue>({
             onChange={(e) => {
               table.setPageSize(Number(e.target.value));
             }}
-            className="dark:bg-blue-900 rounded-md px-1"
+            className="border px-2 py-1 rounded bg-white dark:bg-blue-900"
           >
             {[10, 25, 50, 75, 100].map((pageSize) => (
               <option key={pageSize} value={pageSize}>

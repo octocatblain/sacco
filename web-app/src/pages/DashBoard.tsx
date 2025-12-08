@@ -48,7 +48,8 @@ const DashBoard = () => {
     ? ([loans] as LoanProps[])
     : [];
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+    <div className="flex flex-1 flex-col gap-6 p-4 md:gap-8 md:p-8">
+      {/* KPI cards */}
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
         <Card x-chunk="dashboard-01-chunk-1">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -103,6 +104,7 @@ const DashBoard = () => {
           </CardContent>
         </Card>
       </div>
+      {/* Recent activity */}
       <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
         <Card className="xl:col-span-2" x-chunk="dashboard-01-chunk-4">
           <CardHeader className="flex flex-row items-center">
@@ -110,7 +112,11 @@ const DashBoard = () => {
               <CardTitle>Transactions</CardTitle>
               <CardDescription>Recent transactions.</CardDescription>
             </div>
-            <Button asChild size="sm" className="ml-auto gap-1">
+            <Button
+              asChild
+              size="sm"
+              className="ml-auto gap-1 bg-primary text-black hover:opacity-90"
+            >
               <Link to="/transactions">
                 View All
                 <ArrowUpRight className="h-4 w-4" />
@@ -128,28 +134,30 @@ const DashBoard = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {transactionsArray.slice(0, 10).map((transaction, idx) => (
-                  <TableRow
-                    key={
-                      transaction.transaction_id ??
-                      `${transaction.account}-${
-                        transaction.transaction_date ?? "unknown"
-                      }-${idx}`
-                    }
-                  >
-                    <TableCell>{transaction.account}</TableCell>
-                    <TableCell>{transaction.transaction_type}</TableCell>
-                    <TableCell className="">${transaction.amount}</TableCell>
-                    <TableCell>
-                      {transaction.transaction_date
-                        ? (typeof transaction.transaction_date === "string"
-                            ? new Date(transaction.transaction_date)
-                            : transaction.transaction_date
-                          ).toLocaleString()
-                        : "—"}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {transactionsArray
+                  .slice(0, 10)
+                  .map((transaction: any, idx: any) => (
+                    <TableRow
+                      key={
+                        transaction.transaction_id ??
+                        `${transaction.account}-${
+                          transaction.transaction_date ?? "unknown"
+                        }-${idx}`
+                      }
+                    >
+                      <TableCell>{transaction.account}</TableCell>
+                      <TableCell>{transaction.transaction_type}</TableCell>
+                      <TableCell>${transaction.amount}</TableCell>
+                      <TableCell>
+                        {transaction.transaction_date
+                          ? (typeof transaction.transaction_date === "string"
+                              ? new Date(transaction.transaction_date)
+                              : transaction.transaction_date
+                            ).toLocaleString()
+                          : "—"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </CardContent>
@@ -164,7 +172,7 @@ const DashBoard = () => {
               <div>Status</div>
               <div>Amount</div>
             </div>
-            {loansArray.slice(0, 10).map((loan, idx) => (
+            {loansArray.slice(0, 10).map((loan: any, idx: any) => (
               <div
                 key={
                   loan.loan_id ?? `${loan.account}-${loan.loan_status}-${idx}`
