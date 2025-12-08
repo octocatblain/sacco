@@ -1,76 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import axios from "axios";
-import {  useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { apiBaseUrl } from "@/constants";
-// custom hooks
 import { useFetchSingleObject } from "@/hooks/useFetchSingleObject";
-// types
 import { AccountProps } from "@/types";
-// components
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import Spinner from "@/components/Spinner";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import Spinner from "@/components/Spinner";
 
-// form schema validation with zod
 const formSchema = z.object({
-  // customer: z.string(coerce.number()),
-  customer: z.coerce.number().min(1, {
-    message: "Required",
-  }),
-  account_type: z.string().refine((value) => value !== "", {
-      message: "Required",
-     }),
-  // status: z.string().refine((value) => value !== "", {
-  //   message: "Required",
-  // }),
+  customer: z.coerce.number().min(1, "Customer selection required"),
+  account_type: z.string().min(1, "Account type is required"),
   status: z.string().optional(),
+  balance: z.coerce.number().min(0, "Balance cannot be negative").optional(),
+  interest_rate: z.coerce.number().min(0).optional(),
+  maturity_date: z.string().optional(),
+  kyc_completed: z.boolean().default(false),
+  id_document: z.string().optional(),
 });
 
 const AccountsEdit = () => {
   const { accountNo } = useParams();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate()
 
-  // TODO: This is just a working solution, using condition on custom hook is breaking React rules
-  // Fetch account data
   const { data: accountDetails } = useFetchSingleObject<AccountProps>(
     `accounts/${accountNo}`,
-    accountNo ? true : false
+    !!accountNo
   );
-  console.log(accountDetails);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      customer: 0,
-      // account_type: "",
-      // status: ''
-    },
-    values: accountDetails,
+    defaultValues: { customer: 0, account_type: "", balance: 0, interest_rate: 0 },
   });
 
-  // handle form submit
+  useEffect(() => {
+    if (accountDetails) form.reset(accountDetails);
+  }, [accountDetails, form]);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
     setLoading(true);
     try {
       if (accountNo) {
@@ -80,133 +55,85 @@ const AccountsEdit = () => {
         await axios.post(`${apiBaseUrl}/accounts/`, values);
         toast.success("Account created successfully");
       }
-      setLoading(false);
       navigate("/accounts");
-    } catch (error) {
+    } catch (err: any) {
+      toast.error(err.response?.data?.detail || "Failed to save account");
+    } finally {
       setLoading(false);
-      toast.error("An error occurred");
     }
   };
 
-  if (loading)
-    return (
-      <div className="w-full min-h-screen flex justify-center items-center">
-        <Spinner />
-      </div>
-    );
+  if (loading || (accountNo && !accountDetails)) return <Spinner />;
 
   return (
-    <div>
-      <h1 className="text-2xl font-medium">New Account</h1>
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-8">{accountNo ? "Edit Account" : "Create Account"}</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="bg-gray-200/50 my-5 p-5 rounded-md dark:bg-blue-900">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 pb-5">
-              <FormField
-                control={form.control}
-                name="customer"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Customer ID.</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder=""
-                        // type="number"
-                        {...field}
-                        className="!focus-visible:ring-0 !focus-visible:ring-offset-0"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="account_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Account Type</FormLabel>
-                    <Select
-                      value={field.value}
-                      onValueChange={(v) => v != "" && field.onChange(v)}
-                      // defaultValue={field.value}
-                      // {...field}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select an account type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Savings">Savings</SelectItem>
-                        <SelectItem value="Current">Current</SelectItem>
-                        <SelectItem value="Fixed">Fixed</SelectItem>
-                        <SelectItem value="Joint">Joint</SelectItem>
-                        <SelectItem value="Corporate">Corporate</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <Card>
+            <CardHeader><CardTitle>Account & KYC Details</CardTitle></CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <FormField control={form.control} name="customer" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Customer ID</FormLabel>
+                  <FormControl><Input {...field} type="number" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="account_type" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Product Type</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl><SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
+                    <SelectContent>
+                      <SelectItem value="Savings">Regular Savings</SelectItem>
+                      <SelectItem value="Voluntary">Voluntary Savings</SelectItem>
+                      <SelectItem value="Fixed">Fixed Deposit</SelectItem>
+                      <SelectItem value="Retirement">Retirement</SelectItem>
+                      <SelectItem value="Joint">Joint</SelectItem>
+                      <SelectItem value="Corporate">Corporate</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
               {accountNo && (
-                <FormField
-                  control={form.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Account Status</FormLabel>
-                      <Select
-                        value={field.value}
-                        onValueChange={(v) => v != "" && field.onChange(v)}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an account type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Active">Active</SelectItem>
-                          <SelectItem value="Closed">Closed</SelectItem>
-                          <SelectItem value="Dormant">Dormant</SelectItem>
-                          <SelectItem value="Suspended">Suspended</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-              {/* <FormField
-                control={form.control}
-                name="accountType"
-                render={({ field }) => (
+                <FormField control={form.control} name="status" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Account Name</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select an account Name" />
-                        </SelectTrigger>
-                      </FormControl>
+                    <FormLabel>Status</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl><SelectTrigger><SelectValue placeholder="Select Status" /></SelectTrigger></FormControl>
                       <SelectContent>
-                        <SelectItem value="Starter">Starter</SelectItem>
-                        <SelectItem value="Salary">Salary</SelectItem>
+                        <SelectItem value="Active">Active</SelectItem>
+                        <SelectItem value="Dormant">Dormant</SelectItem>
+                        <SelectItem value="Suspended">Suspended</SelectItem>
+                        <SelectItem value="Closed">Closed</SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormDescription>
-                      You can manage email addresses in your
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
-                )}
-              /> */}
-            </div>
+                )} />
+              )}
+              <FormField control={form.control} name="balance" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Balance</FormLabel>
+                  <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="interest_rate" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Interest Rate (%)</FormLabel>
+                  <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </CardContent>
+          </Card>
+          <div className="flex justify-end gap-4">
+            <Button type="button" variant="outline" onClick={() => navigate(-1)}>Cancel</Button>
+            <Button type="submit" disabled={loading}>{loading ? "Saving..." : "Save Account"}</Button>
           </div>
-          <Button type="submit">Submit</Button>
         </form>
       </Form>
     </div>

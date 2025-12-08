@@ -1,87 +1,83 @@
-// import Button from "@/components/Button";
-import { useDataFetch } from "@/hooks/useDataFetch";
+// src/pages/customers/Customers.tsx
 import { ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
-// components
-import { DataTable } from "@/components/data-table";
-import Spinner from "@/components/Spinner";
-import LucideIcon from "@/components/LucideIcon";
-// types
+import { useDataFetch } from "@/hooks/useDataFetch";
 import { CustomerProps } from "@/types";
+import { DataTable } from "@/components/data-table";
+import LucideIcon from "@/components/LucideIcon";
+import Spinner from "@/components/Spinner";
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
 
 const columns: ColumnDef<CustomerProps>[] = [
   {
     accessorKey: "id",
-    header: "Customer ID",
-    cell: ({ row }) => {
-      return (
-        <div>
-          <Link to={`/customers/view/${row.original.id}`}>
-            {row.original.id}
-          </Link>
-        </div>
-      );
-    },
+    header: "Member ID",
+    cell: ({ row }) => (
+      <Link to={`/customers/view/${row.original.id}`} className="font-medium text-blue-600 hover:underline">
+        M{String(row.original.id).padStart(6, "0")}
+      </Link>
+    ),
   },
   {
     accessorKey: "first_name",
-    header: "First Name",
+    header: "Name",
+    cell: ({ row }) => `${row.original.salutation} ${row.original.first_name} ${row.original.last_name}`,
   },
   {
-    accessorKey: "last_name",
-    header: "last_name",
+    accessorKey: "phone_number",
+    header: "Phone",
   },
   {
-    accessorKey: "email",
-    header: "Email",
-  },
-  { accessorKey: "phone_number", header: "Phone Number" },
-  {
-    accessorKey: "id_number",
-    header: "ID Number",
+    accessorKey: "kyc_status",
+    header: "KYC",
+    cell: ({ row }) => <Badge variant={row.original.kyc_status === "Verified" ? "default" : "secondary"}>
+      {row.original.kyc_status || "Pending"}
+    </Badge>,
   },
   {
-    header: "Actions",
-    cell: ({ row }) => {
-      return (
-        <div className="flex items-center justify-center w-8 h-8 rounded-full border border-slate-400 text-slate-600">
-          <Link to={`/customers/edit/${row.original.id}`} >
-            <LucideIcon name='Pen' size={17}/>
-          </Link>
-        </div>
-      );
-    },
-  }
+    accessorKey: "created_at",
+    header: "Joined",
+    cell: ({ row }) => row.original.created_at ? format(new Date(row.original.created_at), "dd MMM yyyy") : "N/A",
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => (
+      <div className="flex gap-3">
+        <Link to={`/customers/view/${row.original.id}`}><LucideIcon name="Eye" size={18} /></Link>
+        <Link to={`/customers/edit/${row.original.id}`}><LucideIcon name="Pen" size={17} /></Link>
+      </div>
+    ),
+  },
 ];
 
 const Customers = () => {
-  const { data, loading, error } = useDataFetch<CustomerProps>('customers');
-  // Show loading indicator when loading
-  if (loading)
-    return (
-      <div className="w-full min-h-screen flex justify-center items-center">
-        <Spinner />
-      </div>
-    );
+  const { data, loading, error } = useDataFetch<CustomerProps[]>("customers");
 
-  // handling error
-  if (error)
-    return (
-      <div className="w-full min-h-screen flex justify-center items-center">
-        Error : {error.message}
-      </div>
-    );
+  if (loading) return <div className="w-full min-h-screen flex justify-center items-center"><Spinner /></div>;
+  if (error) return <div className="text-red-600">Error: {error.message}</div>;
+
   return (
-    <>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Members</h1>
+          <p className="text-muted-foreground">Digital KYC • Full member management</p>
+        </div>
+        <Link to="/customers/edit" className="bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700">
+          Register Member
+        </Link>
+      </div>
+
       <DataTable
-        title="Customers"
-        route="/customers/edit"
-        btnTitle="Create Customer"
-        data={data}
+        title="All Members"
+        data={data?.[0] || []}
         columns={columns}
-        filters="email"
+        filters="id,first_name,last_name,phone_number"
+        searchable
+        exportable
       />
-    </>
+    </div>
   );
 };
 

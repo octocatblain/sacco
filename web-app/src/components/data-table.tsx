@@ -29,6 +29,9 @@ interface DataTableProps<TData, TValue> {
   title?: string;
   btnTitle?: string;
   filters: string;
+  
+  searchable?: boolean;   // <-- Add this
+  exportable?: boolean;
 }
 
 export function DataTable<TData, TValue>({
