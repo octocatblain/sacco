@@ -21,10 +21,30 @@ const Arrears: FC = () => {
     { header: "Overdue", accessorKey: "overdue" },
   ];
   return (
-    <div>
-      <div className="mb-3 text-sm">
-        Total outstanding:{" "}
-        <strong>{res.totalOutstanding.toLocaleString()}</strong>
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="rounded-lg border bg-white dark:bg-blue-900 p-3">
+          <div className="text-xs text-slate-500">Total outstanding</div>
+          <div className="text-lg font-semibold">
+            {res.totalOutstanding.toLocaleString()}
+          </div>
+        </div>
+        <div className="rounded-lg border bg-white dark:bg-blue-900 p-3">
+          <div className="text-xs text-slate-500">Overdue installments</div>
+          <div className="text-lg font-semibold">{res.overdueCount}</div>
+        </div>
+        <div className="rounded-lg border bg-white dark:bg-blue-900 p-3">
+          <div className="text-xs text-slate-500">Paid so far</div>
+          <div className="text-lg font-semibold">
+            {res.items
+              .reduce((a, i) => a + (i.paidAmount || 0), 0)
+              .toLocaleString()}
+          </div>
+        </div>
+        <div className="rounded-lg border bg-white dark:bg-blue-900 p-3">
+          <div className="text-xs text-slate-500">Installments</div>
+          <div className="text-lg font-semibold">{res.items.length}</div>
+        </div>
       </div>
       <DataTable
         columns={columns as any}

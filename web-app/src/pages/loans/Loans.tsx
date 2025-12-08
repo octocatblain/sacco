@@ -9,7 +9,6 @@ import LucideIcon from "@/components/LucideIcon";
 // types
 import { LoanProps } from "@/types";
 
-
 const columns: ColumnDef<LoanProps>[] = [
   {
     header: "Customer ID",
@@ -70,8 +69,36 @@ const Loans = () => {
         Error : {error.message}
       </div>
     );
+  const totals = {
+    count: Array.isArray(data) ? data.length : 0,
+    totalAmount: Array.isArray(data)
+      ? data.reduce((a, d: any) => a + (Number(d.amount) || 0), 0)
+      : 0,
+    totalBalance: Array.isArray(data)
+      ? data.reduce((a, d: any) => a + (Number(d.loan_balance) || 0), 0)
+      : 0,
+  };
+
   return (
-    <>
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="rounded-lg border bg-white dark:bg-blue-900 p-3">
+          <div className="text-xs text-slate-500">Total loans</div>
+          <div className="text-lg font-semibold">{totals.count}</div>
+        </div>
+        <div className="rounded-lg border bg-white dark:bg-blue-900 p-3">
+          <div className="text-xs text-slate-500">Total amount</div>
+          <div className="text-lg font-semibold">
+            {totals.totalAmount.toLocaleString()}
+          </div>
+        </div>
+        <div className="rounded-lg border bg-white dark:bg-blue-900 p-3">
+          <div className="text-xs text-slate-500">Total balance</div>
+          <div className="text-lg font-semibold">
+            {totals.totalBalance.toLocaleString()}
+          </div>
+        </div>
+      </div>
       <DataTable
         title="Loans"
         btnTitle="Apply Loan"
@@ -80,7 +107,7 @@ const Loans = () => {
         data={data}
         filters="account"
       />
-    </>
+    </div>
   );
 };
 
