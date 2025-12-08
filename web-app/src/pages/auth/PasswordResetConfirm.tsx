@@ -110,7 +110,6 @@ const PasswordResetConfirm: FC = () => {
               <Button
                 text={loading ? <Spinner /> : "Reset Password"}
                 type="submit"
-                variant="secondary"
                 className="mt-2 w-full"
               />
             </form>

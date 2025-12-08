@@ -80,7 +80,6 @@ const ForgotPassword: FC = () => {
               <Button
                 text={loading ? <Spinner /> : "Send Email"}
                 type="submit"
-                variant="secondary"
                 className="mt-2 w-full"
               />
             </form>
