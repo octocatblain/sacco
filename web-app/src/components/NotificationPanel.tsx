@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from "react";
+import { FC } from "react";
 import { useNotifications } from "@/contexts/NotificationContext";
 import type { NotificationItem } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -55,13 +55,6 @@ const NotificationRow: FC<{ n: NotificationItem; onClick: () => void }> = ({
 const NotificationPanel: FC<{ onClose?: () => void }> = ({ onClose }) => {
   const { notifications, unreadCount, markRead, markAllRead, clear } =
     useNotifications();
-  const [tab, setTab] = useState<"all" | "unread">("all");
-
-  const items = useMemo(
-    () =>
-      tab === "unread" ? notifications.filter((n) => !n.read) : notifications,
-    [tab, notifications]
-  );
 
   return (
     <div className="p-2">
@@ -96,38 +89,14 @@ const NotificationPanel: FC<{ onClose?: () => void }> = ({ onClose }) => {
       </div>
       <div className="border-t border-slate-200 dark:border-blue-700" />
 
-      {/* Tabs */}
-      <div className="flex gap-2 px-2 py-2 text-sm">
-        <button
-          className={`px-2 py-1 rounded ${
-            tab === "all"
-              ? "bg-blue-600 text-white"
-              : "hover:bg-slate-100 dark:hover:bg-blue-800"
-          }`}
-          onClick={() => setTab("all")}
-        >
-          All
-        </button>
-        <button
-          className={`px-2 py-1 rounded ${
-            tab === "unread"
-              ? "bg-blue-600 text-white"
-              : "hover:bg-slate-100 dark:hover:bg-blue-800"
-          }`}
-          onClick={() => setTab("unread")}
-        >
-          Unread
-        </button>
-      </div>
-
       {/* List */}
       <div className="max-h-80 overflow-auto p-1">
-        {items.length === 0 ? (
+        {notifications.length === 0 ? (
           <div className="px-3 py-4 text-sm text-slate-500">
             No notifications
           </div>
         ) : (
-          items.map((n) => (
+          notifications.map((n) => (
             <NotificationRow key={n.id} n={n} onClick={() => markRead(n.id)} />
           ))
         )}

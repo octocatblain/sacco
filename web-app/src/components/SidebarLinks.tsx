@@ -35,6 +35,21 @@ const sidebarItems = [
     to: "/loans",
   },
   {
+    label: "Loan Arrears",
+    icon: "AlertTriangle",
+    to: "/loans/arrears",
+  },
+  {
+    label: "Collections",
+    icon: "FileWarning",
+    to: "/loans/collections",
+  },
+  {
+    label: "Loan Alerts",
+    icon: "Bell",
+    to: "/loans/alerts",
+  },
+  {
     label: "Users",
     icon: "Users",
     to: "/users",
@@ -48,6 +63,11 @@ const sidebarItems = [
     label: "Help",
     icon: "CircleHelp",
     to: "/help",
+  },
+  {
+    label: "Notifications",
+    icon: "Bell",
+    to: "/notifications",
   },
 ];
 const SidebarLinks: FC<SidebarLinksProps> = ({

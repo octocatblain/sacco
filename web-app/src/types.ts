@@ -65,6 +65,53 @@ export type LoanProps = {
   date_approved: Date;
 };
 
+// Loans lifecycle domain
+export type Frequency = "monthly" | "weekly" | "daily";
+
+export interface LoanScheduleItem {
+  installmentNo: number;
+  dueDate: string; // ISO date
+  openingBalance: number;
+  interest: number;
+  principal: number;
+  fees: number;
+  totalDue: number;
+  closingBalance: number;
+  paid: boolean;
+}
+
+export interface Repayment {
+  id: string;
+  loanId: string;
+  amount: number;
+  date: string; // ISO
+  method?: string;
+  notes?: string;
+}
+
+export interface Guarantor {
+  id: string;
+  name: string;
+  liability: number; // current guaranteed amount
+  coGuarantor?: boolean;
+}
+
+export interface LoanAlert {
+  id: string;
+  loanId: string;
+  type: "upcoming_due" | "overdue" | "low_balance" | "npl";
+  message: string;
+  createdAt: string; // ISO
+}
+
+export interface LoanDisbursement {
+  id: string;
+  loanId: string;
+  amount: number;
+  date: string; // ISO
+  channel?: string;
+}
+
 // Notifications
 export type NotificationType = "info" | "success" | "warning" | "error";
 

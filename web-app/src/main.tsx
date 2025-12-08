@@ -32,7 +32,11 @@ import Profile from "./pages/Profile.tsx";
 import { ThemeContextProvider } from "./contexts/ThemeContext.tsx";
 import LoansEdit from "./pages/loans/LoansEdit.tsx";
 import LoansView from "./pages/loans/LoansView.tsx";
+import Arrears from "./pages/loans/Arrears.tsx";
+import Collections from "./pages/loans/Collections.tsx";
+import LoanAlerts from "./pages/loans/Alerts.tsx";
 import Help from "./pages/Help.tsx";
+import Notifications from "./pages/Notifications.tsx";
 
 const router = createBrowserRouter([
   {
@@ -54,27 +58,27 @@ const router = createBrowserRouter([
       },
       {
         path: "/customers/view/:customerId",
-        element: <CustomersView />
+        element: <CustomersView />,
       },
       {
         path: "/accounts",
         element: <Accounts />,
       },
       {
-        path: '/accounts/edit/:accountNo?',
-        element: <AccountsEdit />
+        path: "/accounts/edit/:accountNo?",
+        element: <AccountsEdit />,
       },
       {
-        path: '/accounts/view/:accountNo',
-        element: <AccountsView />
+        path: "/accounts/view/:accountNo",
+        element: <AccountsView />,
       },
       {
         path: "/transactions",
         element: <Transactions />,
       },
       {
-        path: '/transactions/edit/:transactionId?',
-        element: <TransactionsEdit />
+        path: "/transactions/edit/:transactionId?",
+        element: <TransactionsEdit />,
       },
       {
         path: "/loans",
@@ -86,7 +90,19 @@ const router = createBrowserRouter([
       },
       {
         path: "/loans/view/:loanId",
-        element: <LoansView />
+        element: <LoansView />,
+      },
+      {
+        path: "/loans/arrears",
+        element: <Arrears />,
+      },
+      {
+        path: "/loans/collections",
+        element: <Collections />,
+      },
+      {
+        path: "/loans/alerts",
+        element: <LoanAlerts />,
       },
       {
         path: "/settings",
@@ -94,7 +110,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/help",
-        element: <Help />
+        element: <Help />,
+      },
+      {
+        path: "/notifications",
+        element: <Notifications />,
       },
       {
         path: "/users",
