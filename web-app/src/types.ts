@@ -240,7 +240,12 @@ export interface NotificationItem {
 
 // types/auth.ts
 // Accounting domain
-export type AccountType = "ASSET" | "LIABILITY" | "EQUITY" | "INCOME" | "EXPENSE";
+export type AccountType =
+  | "ASSET"
+  | "LIABILITY"
+  | "EQUITY"
+  | "INCOME"
+  | "EXPENSE";
 
 export type Account = {
   id: number;

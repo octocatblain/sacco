@@ -55,6 +55,23 @@ const sidebarStructure: Array<LeafItem | GroupItem> = [
       { to: "/kyc/applications", label: "Applications", icon: "List" },
     ],
   },
+  {
+    label: "Accounting",
+    icon: "BookOpen",
+    children: [
+      {
+        to: "/accounting/chart-of-accounts",
+        label: "Chart of Accounts",
+        icon: "ListOrdered",
+      },
+      { to: "/accounting/journals", label: "Journals", icon: "Notebook" },
+      {
+        to: "/accounting/trial-balance",
+        label: "Trial Balance",
+        icon: "Scale",
+      },
+    ],
+  },
   { label: "Help", icon: "CircleHelp", to: "/help" },
 ];
 const SidebarLinks: FC<SidebarLinksProps> = ({

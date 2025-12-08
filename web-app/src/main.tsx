@@ -41,6 +41,9 @@ import Help from "./pages/Help.tsx";
 import Notifications from "./pages/Notifications.tsx";
 import Onboarding from "./pages/kyc/Onboarding.tsx";
 import Applications from "./pages/kyc/Applications.tsx";
+import ChartOfAccounts from "./pages/accounting/ChartOfAccounts.tsx";
+import Journals from "./pages/accounting/Journals.tsx";
+import TrialBalance from "./pages/accounting/TrialBalance.tsx";
 
 const router = createBrowserRouter([
   {
@@ -143,6 +146,18 @@ const router = createBrowserRouter([
       {
         path: "/kyc/applications",
         element: <Applications />,
+      },
+      {
+        path: "/accounting/chart-of-accounts",
+        element: <ChartOfAccounts />,
+      },
+      {
+        path: "/accounting/journals",
+        element: <Journals />,
+      },
+      {
+        path: "/accounting/trial-balance",
+        element: <TrialBalance />,
       },
     ],
   },
