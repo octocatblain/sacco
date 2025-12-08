@@ -8,9 +8,10 @@ interface Props {
 const TopUpDialog: FC<Props> = ({ onTopUp }) => {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState(0);
+  const valid = amount > 0;
 
   const submit = () => {
-    if (amount > 0) {
+    if (valid) {
       onTopUp(amount);
       setOpen(false);
     }
@@ -34,6 +35,15 @@ const TopUpDialog: FC<Props> = ({ onTopUp }) => {
                   value={amount}
                   onChange={(e) => setAmount(Number(e.target.value))}
                 />
+                {!valid ? (
+                  <p className="text-xs text-red-600">
+                    Amount must be greater than 0.
+                  </p>
+                ) : (
+                  <p className="text-xs text-slate-500">
+                    Top up increases principal and future installments.
+                  </p>
+                )}
               </div>
             </div>
             <div className="mt-4 flex justify-end gap-2">
@@ -44,7 +54,7 @@ const TopUpDialog: FC<Props> = ({ onTopUp }) => {
               >
                 Cancel
               </Button>
-              <Button size="sm" onClick={submit}>
+              <Button size="sm" onClick={submit} disabled={!valid}>
                 Apply
               </Button>
             </div>

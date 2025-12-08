@@ -6,9 +6,11 @@ import type { LoanScheduleItem, Repayment, Guarantor } from "@/types";
 import { calcSchedule, computeArrears } from "@/lib/loanMath";
 import DisburseDialog from "@/components/loans/DisburseDialog";
 import RepaymentDialog from "@/components/loans/RepaymentDialog";
+import EditRepaymentDialog from "@/components/loans/EditRepaymentDialog";
 import RescheduleDialog from "@/components/loans/RescheduleDialog";
 import TopUpDialog from "@/components/loans/TopUpDialog";
 import GuarantorDialog from "@/components/loans/GuarantorDialog";
+import EditGuarantorDialog from "@/components/loans/EditGuarantorDialog";
 
 const LoansView: FC = () => {
   const { loanId } = useParams();
@@ -74,7 +76,7 @@ const LoansView: FC = () => {
           <Button
             size="sm"
             variant="secondary"
-            onClick={() => editRepayment(row.original.id)}
+            onClick={() => openEditRepayment(row.original.id)}
           >
             Edit
           </Button>
@@ -101,7 +103,7 @@ const LoansView: FC = () => {
           <Button
             size="sm"
             variant="secondary"
-            onClick={() => editGuarantor(row.original.id)}
+            onClick={() => openEditGuarantor(row.original.id)}
           >
             Edit
           </Button>
@@ -135,11 +137,11 @@ const LoansView: FC = () => {
     });
   };
 
-  const editRepayment = (id: string) => {
+  // removed legacy editRepayment handler to avoid unused warnings
+
+  const saveRepayment = (updated: Repayment) => {
     setRepayments((prev) => {
-      const next = prev.map((r) =>
-        r.id === id ? { ...r, amount: r.amount + 1 } : r
-      );
+      const next = prev.map((r) => (r.id === updated.id ? updated : r));
       localStorage.setItem("loan_repayments", JSON.stringify(next));
       return next;
     });
@@ -151,6 +153,38 @@ const LoansView: FC = () => {
       localStorage.setItem("loan_repayments", JSON.stringify(next));
       return next;
     });
+  };
+
+  const [editRepaymentId, setEditRepaymentId] = useState<string | null>(null);
+  const [repaymentDraft, setRepaymentDraft] = useState<{
+    amount: number;
+    method?: string;
+    notes?: string;
+  } | null>(null);
+  const openEditRepayment = (id: string) => {
+    const r = repayments.find((x) => x.id === id);
+    if (!r) return;
+    setEditRepaymentId(id);
+    setRepaymentDraft({ amount: r.amount, method: r.method, notes: r.notes });
+  };
+  const saveEditRepayment = (updates: {
+    amount: number;
+    method?: string;
+    notes?: string;
+  }) => {
+    if (!editRepaymentId) return;
+    const prev = repayments.find((r) => r.id === editRepaymentId);
+    const updated: Repayment = {
+      id: editRepaymentId,
+      loanId: loanId || "L-1",
+      date: prev?.date || new Date().toISOString(),
+      amount: updates.amount,
+      method: updates.method,
+      notes: updates.notes,
+    };
+    saveRepayment(updated);
+    setEditRepaymentId(null);
+    setRepaymentDraft(null);
   };
 
   const disburse = (amount: number) => {
@@ -186,11 +220,11 @@ const LoansView: FC = () => {
     });
   };
 
-  const editGuarantor = (id: string) => {
+  // removed legacy editGuarantor handler to avoid unused warnings
+
+  const saveGuarantor = (updated: Guarantor) => {
     setGuarantors((prev) => {
-      const next = prev.map((g) =>
-        g.id === id ? { ...g, liability: g.liability + 100 } : g
-      );
+      const next = prev.map((g) => (g.id === updated.id ? updated : g));
       localStorage.setItem("loan_guarantors", JSON.stringify(next));
       return next;
     });
@@ -202,6 +236,37 @@ const LoansView: FC = () => {
       localStorage.setItem("loan_guarantors", JSON.stringify(next));
       return next;
     });
+  };
+
+  const [editGuarantorId, setEditGuarantorId] = useState<string | null>(null);
+  const [guarantorDraft, setGuarantorDraft] = useState<{
+    name: string;
+    liability: number;
+    coGuarantor?: string;
+  } | null>(null);
+  const openEditGuarantor = (id: string) => {
+    const g = guarantors.find((x) => x.id === id);
+    if (!g) return;
+    setEditGuarantorId(id);
+    setGuarantorDraft({
+      name: g.name,
+      liability: g.liability,
+      coGuarantor:
+        typeof g.coGuarantor === "boolean"
+          ? String(g.coGuarantor)
+          : g.coGuarantor,
+    });
+  };
+  const saveEditGuarantor = (updates: {
+    name: string;
+    liability: number;
+    coGuarantor?: string;
+  }) => {
+    if (!editGuarantorId) return;
+    const updated: Guarantor = { id: editGuarantorId, ...updates } as Guarantor;
+    saveGuarantor(updated);
+    setEditGuarantorId(null);
+    setGuarantorDraft(null);
   };
 
   return (
@@ -265,6 +330,16 @@ const LoansView: FC = () => {
         <h2 className="text-lg font-semibold">Amortization Schedule</h2>
         <GuarantorDialog onAdd={addGuarantor} />
       </div>
+      <div className="mb-2 rounded-md border bg-white dark:bg-blue-900 p-2 text-xs">
+        <div className="flex gap-4">
+          <span>
+            Est. installment: {schedule[0]?.totalDue?.toLocaleString() || 0}
+          </span>
+          <span>Total interest: {totals.interest.toLocaleString()}</span>
+          <span>Total fees: {totals.fees.toLocaleString()}</span>
+          <span>Total payable: {totals.total.toLocaleString()}</span>
+        </div>
+      </div>
       <DataTable
         columns={scheduleColumns as any}
         data={schedule}
@@ -286,6 +361,20 @@ const LoansView: FC = () => {
         reportHeading="Loan Repayments"
       />
 
+      {editRepaymentId && repaymentDraft && (
+        <EditRepaymentDialog
+          open={true}
+          onClose={() => {
+            setEditRepaymentId(null);
+            setRepaymentDraft(null);
+          }}
+          onSave={saveEditRepayment}
+          amount={repaymentDraft.amount}
+          method={repaymentDraft.method}
+          notes={repaymentDraft.notes}
+        />
+      )}
+
       {/* Guarantors */}
       <DataTable
         columns={guarantorColumns as any}
@@ -296,6 +385,19 @@ const LoansView: FC = () => {
         filters="name"
         reportHeading="Loan Guarantors"
       />
+      {editGuarantorId && guarantorDraft && (
+        <EditGuarantorDialog
+          open={true}
+          onClose={() => {
+            setEditGuarantorId(null);
+            setGuarantorDraft(null);
+          }}
+          onSave={saveEditGuarantor}
+          name={guarantorDraft.name}
+          liability={guarantorDraft.liability}
+          coGuarantor={guarantorDraft.coGuarantor}
+        />
+      )}
     </div>
   );
 };
