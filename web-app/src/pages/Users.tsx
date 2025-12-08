@@ -6,7 +6,7 @@ import Spinner from "@/components/Spinner";
 // types
 import { UserProps } from "@/types";
 
-import ProfilePlaceholder from '@/assets/profile-placeholder.png'
+import ProfilePlaceholder from "@/assets/profile-placeholder.png";
 
 // table columns
 const columns: ColumnDef<UserProps>[] = [
@@ -16,7 +16,11 @@ const columns: ColumnDef<UserProps>[] = [
     cell: ({ row }) => {
       return (
         <img
-          src={row.original.profile.profile_image ? row.original.profile.profile_image.toString() : ProfilePlaceholder}
+          src={
+            row.original.profile.profile_image
+              ? row.original.profile.profile_image.toString()
+              : ProfilePlaceholder
+          }
           alt={row.original.username}
           className="w-10 h-10 rounded-full"
         />
@@ -37,14 +41,29 @@ const columns: ColumnDef<UserProps>[] = [
   },
 ];
 
-const Users = () => {  
-  const {data, loading, error} = useDataFetch<UserProps>('users')
+const Users = () => {
+  const { data, loading, error } = useDataFetch<UserProps>("users");
 
   // Show loading indicator when loading
-  if (loading) return <div className="w-full min-h-screen flex justify-center items-center"><Spinner /></div>
+  if (loading)
+    return (
+      <div className="w-full min-h-[50vh] flex justify-center items-center">
+        <Spinner />
+      </div>
+    );
 
   // handling error
-  if(error) return <div className="w-full min-h-screen flex justify-center items-center">Error : {error.message}</div>
+  if (error)
+    return (
+      <div className="w-full min-h-[40vh] flex items-center justify-center">
+        <div className="rounded-xl bg-white dark:bg-blue-950 border border-slate-200 dark:border-blue-700 shadow-sm p-6 text-center max-w-md">
+          <h2 className="text-lg font-semibold mb-2">Unable to load users</h2>
+          <p className="text-sm text-slate-600 dark:text-slate-300">
+            {error.message}
+          </p>
+        </div>
+      </div>
+    );
   return (
     <>
       <DataTable
@@ -53,7 +72,7 @@ const Users = () => {
         btnTitle="Create User"
         data={data}
         columns={columns}
-        filters= 'username'
+        filters="username"
       />
     </>
   );

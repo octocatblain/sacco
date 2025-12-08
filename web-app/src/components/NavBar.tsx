@@ -66,66 +66,112 @@ const NavBar: FC<NavBarProps> = ({
     }
   };
   return (
-    <div className="max-w-full relative flex items-center justify-between text-white bg-blue-700 h-16 dark:bg-blue-800 dark:text-slate-300 rounded-lg px-3 ">
-      <div className="flex items-center">
-        <img src={Logo} alt="SLAMS logo" className="w-20 h-20" />
-        <div className="lg:hidden" onClick={handleMobileMenuToggle}>
+    <div className="max-w-full relative flex items-center justify-between text-white bg-primary h-16 px-4 dark:bg-blue-800 dark:text-slate-300">
+      {/* Left: Brand */}
+      <div className="flex items-center gap-x-3">
+        <img src={Logo} alt="SLAMS logo" className="w-15 h-10" />
+        <span className="text-xl font-semibold tracking-wide text-black">
+          SLMS
+        </span>
+        <button
+          className="lg:hidden ml-2 inline-flex items-center justify-center p-2 rounded-md hover:bg-white/20"
+          onClick={handleMobileMenuToggle}
+          aria-label="Toggle menu"
+        >
           {showMobileMenu ? (
-            <LucideIcon name="X" size={27} />
+            <LucideIcon name="X" size={24} />
           ) : (
-            <LucideIcon name="AlignJustify" size={27} />
+            <LucideIcon name="AlignJustify" size={24} />
           )}
-        </div>
+        </button>
       </div>
 
-      <div className="flex gap-x-5 items-center">
-        <div onClick={toggleDarkTheme}>
+      {/* Right: Theme toggle and profile */}
+      <div className="flex items-center gap-x-4">
+        <button
+          onClick={toggleDarkTheme}
+          className="inline-flex items-center justify-center p-2 rounded-md hover:bg-white/20"
+          aria-label="Toggle theme"
+        >
           {darkTheme ? (
-            <LucideIcon name="Moon" size={24} />
+            <LucideIcon name="Moon" size={20} />
           ) : (
-            <LucideIcon name="Sun" size={24} />
+            <LucideIcon name="Sun" size={20} />
           )}
-        </div>
-        <div>
-          <img
-            className="rounded-full  border border-white w-10 h-10"
-            src={
-              profile?.profile?.profile_image
-                ? `${apiBaseUrl}${profile?.profile?.profile_image}`
-                : ProfilePlaceholder
-            }
-            // src={ProfileImage}
-            alt=" mr Isaac"
+        </button>
+
+        <div className="relative" ref={dropdownRef}>
+          <button
             onClick={handleShowDropdown}
-          />
-          {/* dropdown menu start here */}
-          <div
-            ref={dropdownRef}
-            className={` ${
-              showDropdown ? "block" : "hidden"
-            } bg-gray-200 text-black absolute z-20 mt-3 me-3 right-0 rounded-md dark:bg-blue-700 dark:text-white`}
+            className="flex items-center gap-x-2 rounded-full bg-white/10 hover:bg-white/20 px-2 py-1"
+            aria-haspopup="menu"
+            aria-expanded={showDropdown}
           >
-            <div className="p-4">
-              <p className="">
-                {profile?.username}
-                <small className="bg-blue-700 dark:bg-blue-950 rounded-md text-white text-xs p-0.5">
-                  {profile?.profile?.role_display}
-                </small>
-              </p>
-              <p className="pb-2">{profile?.email}</p>
+            <img
+              className="rounded-full border border-white w-9 h-9 object-cover"
+              src={
+                profile?.profile?.profile_image
+                  ? `${apiBaseUrl}${profile?.profile?.profile_image}`
+                  : ProfilePlaceholder
+              }
+              alt={profile?.username || "profile"}
+            />
+            <span className="hidden md:inline-block text-sm font-medium">
+              {profile?.username || "User"}
+            </span>
+            <LucideIcon name="ChevronDown" size={16} />
+          </button>
+
+          {/* Dropdown */}
+          <div
+            className={`absolute right-0 mt-2 w-64 rounded-md bg-white text-black shadow-lg ring-1 ring-black/5 dark:bg-blue-900 dark:text-white ${
+              showDropdown ? "block" : "hidden"
+            }`}
+          >
+            {/* Header */}
+            <div className="flex items-center gap-x-3 p-3">
+              <img
+                className="rounded-full w-10 h-10 object-cover"
+                src={
+                  profile?.profile?.profile_image
+                    ? `${apiBaseUrl}${profile?.profile?.profile_image}`
+                    : ProfilePlaceholder
+                }
+                alt={profile?.username || "profile"}
+              />
+              <div className="min-w-0">
+                <p className="text-sm font-semibold truncate">
+                  {profile?.username}
+                  {profile?.profile?.role_display && (
+                    <span className="ml-2 inline-block align-middle rounded-md bg-primary text-black text-[10px] px-1 py-0.5">
+                      {profile?.profile?.role_display}
+                    </span>
+                  )}
+                </p>
+                <p className="text-xs text-slate-600 dark:text-slate-300 truncate">
+                  {profile?.email}
+                </p>
+              </div>
+            </div>
+            <div className="border-t border-slate-200 dark:border-blue-700" />
+
+            {/* Actions */}
+            <div className="p-2">
               <Link
                 to="/profile"
-                className="flex hover:bg-blue-500/25 p-2  rounded-md dark:hover:bg-blue-500/75"
                 onClick={handleShowDropdown}
+                className="flex items-center gap-x-2 rounded-md px-3 py-2 hover:bg-slate-100 dark:hover:bg-blue-800"
               >
-                Profile
+                <LucideIcon name="User" size={16} />
+                <span className="text-sm">Profile</span>
               </Link>
-              <div
-                className="flex items-center text-sm gap-x-1 cursor-pointer hover:bg-blue-500/25 p-2 my-2 rounded-md dark:hover:bg-blue-500/75"
+              <button
                 onClick={handleLogout}
+                className="mt-1 w-full flex items-center gap-x-2 rounded-md px-3 py-2 hover:bg-slate-100 dark:hover:bg-blue-800 text-left"
               >
-                <LucideIcon name="LogOut" size={16} /> Logout
-              </div>
+                <LucideIcon name="LogOut" size={16} />
+                <span className="text-sm">Logout</span>
+              </button>
             </div>
           </div>
         </div>

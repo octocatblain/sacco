@@ -113,7 +113,6 @@ const SignIn: FC = () => {
               <Button
                 text={loading ? <Spinner /> : "Login"}
                 type="submit"
-                variant="secondary"
                 className="mt-2 w-full"
               />
             </form>

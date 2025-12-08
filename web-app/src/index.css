@@ -4,6 +4,42 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme variables */
+:root {
+  --color-primary: #8ab9f1;
+  --color-black: #0b0b0b;
+  --color-white: #ffffff;
+}
+
+.dark {
+  --color-primary: #8ab9f1; /* keep same primary in dark */
+  --color-black: #0b0f1a; /* slightly softer black for dark */
+  --color-white: #e5e7eb; /* soft white in dark */
+}
+
+/* Utility bridges for Tailwind where needed */
+.bg-primary {
+  background-color: var(--color-primary);
+}
+.text-primary {
+  color: var(--color-primary);
+}
+.border-primary {
+  border-color: var(--color-primary);
+}
+.bg-black {
+  background-color: var(--color-black);
+}
+.text-black {
+  color: var(--color-black);
+}
+.bg-white {
+  background-color: var(--color-white);
+}
+.text-white {
+  color: var(--color-white);
+}
+
 @layer base {
   :root {
     --chart-1: 12 76% 61%;
