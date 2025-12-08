@@ -15,12 +15,18 @@ const Button: FC<ButtonProps> = ({
   className,
   disabled,
   variant,
+  type,
 }) => {
-  const bg =
-    variant === "primary" ? "bg- white text-black" : "bg-blue-500 text-white";
+  const base =
+    "inline-flex items-center justify-center px-4 py-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed";
+  const styles =
+    variant === "primary"
+      ? "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600"
+      : "bg-white text-slate-800 border border-slate-300 hover:bg-slate-50 focus:ring-slate-400 dark:bg-blue-900 dark:text-white dark:border-blue-700 dark:hover:bg-blue-800";
   return (
     <button
-      className={`flex justify-center py-2 px-3 rounded-md ${bg} ${className}`}
+      type={type || "button"}
+      className={`${base} ${styles} ${className || ""}`}
       onClick={onClick}
       disabled={disabled}
     >

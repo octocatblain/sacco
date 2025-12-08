@@ -39,9 +39,9 @@ const sidebarItems = [
     to: "/settings",
   },
   {
-    label: 'Help',
-    icon: 'CircleHelp',
-    to: '/help'
+    label: "Help",
+    icon: "CircleHelp",
+    to: "/help",
   },
   {
     label: "Users",
@@ -57,10 +57,16 @@ const SidebarLinks: FC<SidebarLinksProps> = ({ onClick }) => {
           <NavLink
             to={item.to}
             onClick={onClick}
-            // TODO: check isActive on light mode, currently only works on dark mode
             className={({ isActive }) =>
-              `flex gap-x-3 bg-white py-2 px-3 text-base text-slate-800 rounded-md hover:bg-slate-950/25 hover:text-white transition duration-300 ease-in-out  dark:bg-blue-500/25 dark:text-slate-300 dark:hover:bg-blue-500/75
-                   ${isActive ? " dark:bg-blue-500/75 dark:text-white" : ""}`
+              `flex items-center gap-x-3 py-2 px-3 text-base rounded-md transition-colors duration-200
+               bg-white text-slate-800 hover:bg-slate-100
+               dark:bg-blue-900 dark:text-slate-200 dark:hover:bg-blue-800
+               border border-transparent dark:border-blue-800
+               ${
+                 isActive
+                   ? "border-slate-300 dark:border-blue-600 shadow-sm"
+                   : ""
+               }`
             }
           >
             <LucideIcon name={item.icon} /> {item.label}
