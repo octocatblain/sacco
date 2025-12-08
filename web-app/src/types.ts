@@ -80,6 +80,57 @@ export interface LoanScheduleItem {
   paid: boolean;
 }
 
+// Savings domain
+export type SavingsProductType =
+  | "voluntary"
+  | "mandatory"
+  | "retirement"
+  | "custom";
+export interface SavingsProduct {
+  id: string;
+  name: string;
+  type: SavingsProductType;
+  minContribution?: number;
+  maxContribution?: number;
+  interestRate?: number; // annual
+  penaltyRule?: {
+    lateFee?: number; // fixed amount
+    penaltyRate?: number; // % of due amount
+    graceDays?: number;
+  };
+  standingOrderAllowed?: boolean;
+}
+
+export interface StandingOrder {
+  id: string;
+  accountId: string;
+  productId: string;
+  amount: number;
+  frequency: Frequency;
+  startDate: string;
+  endDate?: string;
+  active: boolean;
+}
+
+export interface ContributionScheduleItem {
+  id: string;
+  date: string;
+  dueAmount: number;
+  paidAmount: number;
+  outstanding: number;
+  overdue: boolean;
+}
+
+export interface Contribution {
+  id: string;
+  accountId: string;
+  productId: string;
+  date: string;
+  amount: number;
+  method?: string;
+  notes?: string;
+}
+
 export interface Repayment {
   id: string;
   loanId: string;

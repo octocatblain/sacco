@@ -27,7 +27,7 @@ const sidebarStructure: Array<LeafItem | GroupItem> = [
     icon: "Wallet",
     children: [
       { label: "All Loans", icon: "Wallet", to: "/loans" },
-      { label: "Arrears", icon: "AlertTriangle", to: "/loans/arrears" },
+      { label: "Arrears", icon: "Alert", to: "/loans/arrears" },
       { label: "Collections", icon: "FileWarning", to: "/loans/collections" },
       { label: "Alerts", icon: "Bell", to: "/loans/alerts" },
     ],
@@ -36,6 +36,18 @@ const sidebarStructure: Array<LeafItem | GroupItem> = [
   { label: "Notifications", icon: "Bell", to: "/notifications" },
   { label: "Settings", icon: "Settings", to: "/settings" },
   { label: "Help", icon: "CircleHelp", to: "/help" },
+  {
+    label: "Savings",
+    icon: "PiggyBank",
+    children: [
+      { label: "Products", icon: "BookOpen", to: "/savings/products" },
+      {
+        label: "My Contributions",
+        icon: "Coins",
+        to: "/savings/contributions",
+      },
+    ],
+  },
 ];
 const SidebarLinks: FC<SidebarLinksProps> = ({
   onClick,

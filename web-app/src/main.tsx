@@ -35,6 +35,8 @@ import LoansView from "./pages/loans/LoansView.tsx";
 import Arrears from "./pages/loans/Arrears.tsx";
 import Collections from "./pages/loans/Collections.tsx";
 import LoanAlerts from "./pages/loans/Alerts.tsx";
+import AdminProducts from "./pages/savings/AdminProducts.tsx";
+import UserContributions from "./pages/savings/UserContributions.tsx";
 import Help from "./pages/Help.tsx";
 import Notifications from "./pages/Notifications.tsx";
 
@@ -103,6 +105,14 @@ const router = createBrowserRouter([
       {
         path: "/loans/alerts",
         element: <LoanAlerts />,
+      },
+      {
+        path: "/savings/products",
+        element: <AdminProducts />,
+      },
+      {
+        path: "/savings/contributions",
+        element: <UserContributions />,
       },
       {
         path: "/settings",

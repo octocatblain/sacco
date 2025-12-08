@@ -46,7 +46,7 @@ const Collections: FC = () => {
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <div className="rounded-lg border bg-white dark:bg-blue-900 p-3">
           <div className="text-xs text-slate-500">Accounts in collections</div>
           <div className="text-lg font-semibold">{metrics.count}</div>
@@ -65,12 +65,15 @@ const Collections: FC = () => {
           <div className="text-xs text-slate-500">Max DPD</div>
           <div className="text-lg font-semibold">{metrics.maxDPD} days</div>
         </div>
+        {metrics.buckets.length > 0 && (
+          <div className="rounded-lg border bg-white dark:bg-blue-900 p-3">
+            <div className="text-xs text-slate-500">Buckets</div>
+            <div className="text-sm font-medium text-slate-700 dark:text-slate-200">
+              {metrics.buckets.map(([b, c]) => `${b}: ${c}`).join(" • ")}
+            </div>
+          </div>
+        )}
       </div>
-      {metrics.buckets.length > 0 && (
-        <div className="text-xs text-slate-600 dark:text-slate-300">
-          Buckets: {metrics.buckets.map(([b, c]) => `${b}: ${c}`).join(" • ")}
-        </div>
-      )}
       <DataTable
         columns={columns as any}
         data={data}
