@@ -18,13 +18,16 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/users/', include('users.urls')),
+    # Expose all user-related endpoints under /api/
+    path('api/', include('users.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/customers/', include('customers.urls')),
     path('api/accounting/', include('accounting.urls')),
+    path('api/health/', lambda request: JsonResponse({'status': 'ok'})),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,

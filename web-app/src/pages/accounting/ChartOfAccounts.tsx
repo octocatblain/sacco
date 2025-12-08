@@ -22,6 +22,7 @@ export default function ChartOfAccounts() {
     currency: "KES",
   });
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     save(rows);
@@ -107,6 +108,7 @@ export default function ChartOfAccounts() {
       ]);
     }
     resetForm();
+    setOpen(false);
   };
 
   const startEdit = (acc: Account) => {
@@ -119,6 +121,7 @@ export default function ChartOfAccounts() {
       is_active: acc.is_active,
       parent: acc.parent ?? null,
     });
+    setOpen(true);
   };
 
   const remove = (id: number) =>
@@ -128,6 +131,15 @@ export default function ChartOfAccounts() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">Chart of Accounts</h1>
+        <Button
+          size="sm"
+          onClick={() => {
+            resetForm();
+            setOpen(true);
+          }}
+        >
+          Add Account
+        </Button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
@@ -149,71 +161,78 @@ export default function ChartOfAccounts() {
           </div>
         ))}
       </div>
-
-      <section className="rounded-lg border bg-white dark:bg-blue-900 p-4 space-y-3">
-        <h2 className="font-semibold">
-          {editingId ? "Edit Account" : "Add Account"}
-        </h2>
-        <div className="grid md:grid-cols-6 gap-3">
-          <div className="md:col-span-2">
-            <label className="text-sm">Code</label>
-            <input
-              className="mt-1 w-full border rounded px-2 py-1 dark:bg-blue-950"
-              value={form.code || ""}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, code: e.target.value }))
-              }
-            />
-          </div>
-          <div className="md:col-span-2">
-            <label className="text-sm">Name</label>
-            <input
-              className="mt-1 w-full border rounded px-2 py-1 dark:bg-blue-950"
-              value={form.name || ""}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, name: e.target.value }))
-              }
-            />
-          </div>
-          <div>
-            <label className="text-sm">Type</label>
-            <select
-              className="mt-1 w-full border rounded px-2 py-1 dark:bg-blue-950"
-              value={form.type as string}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  type: e.target.value as AccountType,
-                }))
-              }
-            >
-              <option value="ASSET">Asset</option>
-              <option value="LIABILITY">Liability</option>
-              <option value="EQUITY">Equity</option>
-              <option value="INCOME">Income</option>
-              <option value="EXPENSE">Expense</option>
-            </select>
-          </div>
-          <div>
-            <label className="text-sm">Currency</label>
-            <input
-              className="mt-1 w-full border rounded px-2 py-1 dark:bg-blue-950"
-              value={form.currency || "KES"}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, currency: e.target.value }))
-              }
-            />
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="w-full max-w-2xl rounded-md bg-white p-4 dark:bg-blue-900">
+            <h2 className="font-semibold mb-3">
+              {editingId ? "Edit Account" : "Add Account"}
+            </h2>
+            <div className="grid md:grid-cols-6 gap-3">
+              <div className="md:col-span-2">
+                <label className="text-sm">Code</label>
+                <input
+                  className="mt-1 w-full border rounded px-2 py-1 dark:bg-blue-950"
+                  value={form.code || ""}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, code: e.target.value }))
+                  }
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="text-sm">Name</label>
+                <input
+                  className="mt-1 w-full border rounded px-2 py-1 dark:bg-blue-950"
+                  value={form.name || ""}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, name: e.target.value }))
+                  }
+                />
+              </div>
+              <div>
+                <label className="text-sm">Type</label>
+                <select
+                  className="mt-1 w-full border rounded px-2 py-1 dark:bg-blue-950"
+                  value={form.type as string}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      type: e.target.value as AccountType,
+                    }))
+                  }
+                >
+                  <option value="ASSET">Asset</option>
+                  <option value="LIABILITY">Liability</option>
+                  <option value="EQUITY">Equity</option>
+                  <option value="INCOME">Income</option>
+                  <option value="EXPENSE">Expense</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm">Currency</label>
+                <input
+                  className="mt-1 w-full border rounded px-2 py-1 dark:bg-blue-950"
+                  value={form.currency || "KES"}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, currency: e.target.value }))
+                  }
+                />
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  resetForm();
+                  setOpen(false);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={add}>{editingId ? "Update" : "Add"}</Button>
+            </div>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={add}>{editingId ? "Update" : "Add"}</Button>
-          {editingId ? (
-            <Button variant="outline" onClick={resetForm}>
-              Cancel
-            </Button>
-          ) : null}
-        </div>
-      </section>
+      )}
 
       <DataTable
         columns={columns}

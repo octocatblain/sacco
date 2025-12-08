@@ -30,7 +30,9 @@ export default function Journals() {
     posted: false,
     lines: [],
   });
+  const [open, setOpen] = useState(false);
   const accounts = loadAccounts();
+  const hasAccounts = Array.isArray(accounts) && accounts.length > 0;
 
   const balanced = useMemo(() => {
     const d = (form.lines || []).reduce((s, l) => s + (l.debit || 0), 0);
@@ -82,11 +84,13 @@ export default function Journals() {
       setEntries((prev) => [{ ...form, id }, ...prev]);
     }
     resetForm();
+    setOpen(false);
   };
 
   const startEdit = (e: JournalEntry) => {
     setEditingId((e as any).id as number);
     setForm({ ...e });
+    setOpen(true);
   };
   const del = (id: number) =>
     setEntries((prev) => prev.filter((e) => (e as any).id !== id));
@@ -141,6 +145,16 @@ export default function Journals() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">Journals</h1>
+        <Button
+          size="sm"
+          disabled={!hasAccounts}
+          onClick={() => {
+            resetForm();
+            setOpen(true);
+          }}
+        >
+          New Entry
+        </Button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -155,138 +169,148 @@ export default function Journals() {
           </div>
         </div>
       </div>
-
-      <section className="rounded-lg border bg-white dark:bg-blue-900 p-4 space-y-3">
-        <h2 className="font-semibold">
-          {editingId ? "Edit Entry" : "New Entry"}
-        </h2>
-        <div className="grid md:grid-cols-4 gap-3">
-          <div>
-            <label className="text-sm">Date</label>
-            <input
-              type="date"
-              className="mt-1 w-full border rounded px-2 py-1 dark:bg-blue-950"
-              value={form.date}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, date: e.target.value }))
-              }
-            />
-          </div>
-          <div>
-            <label className="text-sm">Reference</label>
-            <input
-              className="mt-1 w-full border rounded px-2 py-1 dark:bg-blue-950"
-              value={form.reference || ""}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, reference: e.target.value }))
-              }
-            />
-          </div>
-          <div className="md:col-span-2">
-            <label className="text-sm">Narration</label>
-            <input
-              className="mt-1 w-full border rounded px-2 py-1 dark:bg-blue-950"
-              value={form.narration || ""}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, narration: e.target.value }))
-              }
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium">Lines</h3>
-            <Button size="sm" onClick={addLine}>
-              Add Line
-            </Button>
-          </div>
-          <div className="grid grid-cols-7 gap-2 text-sm font-medium">
-            <div>Account</div>
-            <div className="col-span-3">Memo</div>
-            <div className="text-right">Debit</div>
-            <div className="text-right">Credit</div>
-            <div></div>
-          </div>
-          {(form.lines || []).map((l, idx) => (
-            <div key={idx} className="grid grid-cols-7 gap-2">
-              <select
-                className="border rounded px-2 py-1 dark:bg-blue-950"
-                value={l.account}
-                onChange={(e) =>
-                  updateLine(idx, { account: Number(e.target.value) })
-                }
-              >
-                {accounts.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.code} - {a.name}
-                  </option>
-                ))}
-              </select>
-              <input
-                className="col-span-3 border rounded px-2 py-1 dark:bg-blue-950"
-                value={l.memo || ""}
-                onChange={(e) => updateLine(idx, { memo: e.target.value })}
-              />
-              <input
-                type="number"
-                step="0.01"
-                className="text-right border rounded px-2 py-1 dark:bg-blue-950"
-                value={l.debit || 0}
-                onChange={(e) =>
-                  updateLine(idx, {
-                    debit: Number(e.target.value) || 0,
-                    credit: 0,
-                  })
-                }
-              />
-              <input
-                type="number"
-                step="0.01"
-                className="text-right border rounded px-2 py-1 dark:bg-blue-950"
-                value={l.credit || 0}
-                onChange={(e) =>
-                  updateLine(idx, {
-                    credit: Number(e.target.value) || 0,
-                    debit: 0,
-                  })
-                }
-              />
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="w-full max-w-4xl rounded-md bg-white p-4 dark:bg-blue-900">
+            <h2 className="font-semibold mb-3">
+              {editingId ? "Edit Entry" : "New Entry"}
+            </h2>
+            <div className="grid md:grid-cols-4 gap-3">
+              <div>
+                <label className="text-sm">Date</label>
+                <input
+                  type="date"
+                  className="mt-1 w-full border rounded px-2 py-1 dark:bg-blue-950"
+                  value={form.date}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, date: e.target.value }))
+                  }
+                />
+              </div>
+              <div>
+                <label className="text-sm">Reference</label>
+                <input
+                  className="mt-1 w-full border rounded px-2 py-1 dark:bg-blue-950"
+                  value={form.reference || ""}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, reference: e.target.value }))
+                  }
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="text-sm">Narration</label>
+                <input
+                  className="mt-1 w-full border rounded px-2 py-1 dark:bg-blue-950"
+                  value={form.narration || ""}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, narration: e.target.value }))
+                  }
+                />
+              </div>
+            </div>
+            <div className="space-y-2 mt-3">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium">Lines</h3>
+                <Button size="sm" disabled={!hasAccounts} onClick={addLine}>
+                  Add Line
+                </Button>
+              </div>
+              <div className="grid grid-cols-7 gap-2 text-sm font-medium">
+                <div>Account</div>
+                <div className="col-span-3">Memo</div>
+                <div className="text-right">Debit</div>
+                <div className="text-right">Credit</div>
+                <div></div>
+              </div>
+              {(form.lines || []).map((l, idx) => (
+                <div key={idx} className="grid grid-cols-7 gap-2">
+                  <select
+                    className="border rounded px-2 py-1 dark:bg-blue-950"
+                    value={l.account ?? (hasAccounts ? accounts[0].id : 0)}
+                    onChange={(e) =>
+                      updateLine(idx, { account: Number(e.target.value) })
+                    }
+                    disabled={!hasAccounts}
+                  >
+                    {hasAccounts ? (
+                      accounts.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.code} - {a.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value={0}>No accounts available</option>
+                    )}
+                  </select>
+                  <input
+                    className="col-span-3 border rounded px-2 py-1 dark:bg-blue-950"
+                    value={l.memo || ""}
+                    onChange={(e) => updateLine(idx, { memo: e.target.value })}
+                  />
+                  <input
+                    type="number"
+                    step="0.01"
+                    className="text-right border rounded px-2 py-1 dark:bg-blue-950"
+                    value={l.debit || 0}
+                    onChange={(e) =>
+                      updateLine(idx, {
+                        debit: Number(e.target.value) || 0,
+                        credit: 0,
+                      })
+                    }
+                  />
+                  <input
+                    type="number"
+                    step="0.01"
+                    className="text-right border rounded px-2 py-1 dark:bg-blue-950"
+                    value={l.credit || 0}
+                    onChange={(e) =>
+                      updateLine(idx, {
+                        credit: Number(e.target.value) || 0,
+                        debit: 0,
+                      })
+                    }
+                  />
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => removeLine(idx)}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+              <div className="grid grid-cols-7 gap-2 mt-2">
+                <div className="col-start-5 text-right font-semibold">
+                  {debitSum.toFixed(2)}
+                </div>
+                <div className="text-right font-semibold">
+                  {creditSum.toFixed(2)}
+                </div>
+                <div
+                  className={`text-sm ${
+                    balanced ? "text-emerald-600" : "text-red-600"
+                  }`}
+                >
+                  {balanced ? "Balanced" : "Out of balance"}
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end gap-2">
               <Button
-                size="sm"
-                variant="destructive"
-                onClick={() => removeLine(idx)}
+                variant="outline"
+                onClick={() => {
+                  resetForm();
+                  setOpen(false);
+                }}
               >
-                Remove
+                Cancel
               </Button>
-            </div>
-          ))}
-          <div className="grid grid-cols-7 gap-2 mt-2">
-            <div className="col-start-5 text-right font-semibold">
-              {debitSum.toFixed(2)}
-            </div>
-            <div className="text-right font-semibold">
-              {creditSum.toFixed(2)}
-            </div>
-            <div
-              className={`text-sm ${
-                balanced ? "text-emerald-600" : "text-red-600"
-              }`}
-            >
-              {balanced ? "Balanced" : "Out of balance"}
+              <Button onClick={save}>{editingId ? "Update" : "Save"}</Button>
             </div>
           </div>
         </div>
-
-        <div className="flex gap-2">
-          <Button onClick={save}>{editingId ? "Update" : "Save"}</Button>
-          {editingId ? (
-            <Button variant="outline" onClick={resetForm}>
-              Cancel
-            </Button>
-          ) : null}
-        </div>
-      </section>
+      )}
 
       <DataTable
         columns={columns}

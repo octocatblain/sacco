@@ -72,10 +72,11 @@ const formSchema = z.object({
 
 const CustomersEdit = () => {
   const { customerId } = useParams();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { data: customer } = useFetchSingleObject<CustomerProps>(
-    `customers/${customerId}`, customerId ? true : false
+    `api/customers/${customerId}/`,
+    customerId ? true : false
   );
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -91,13 +92,13 @@ const CustomersEdit = () => {
       country: "",
       county: "",
       city: "",
-      po_box: 0
+      po_box: 0,
     },
-    values: customer
+    values: customer,
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+    console.log(values);
     setLoading(true);
     try {
       // Format the date_of_birth to YYYY-MM-DD
@@ -106,14 +107,17 @@ const CustomersEdit = () => {
         date_of_birth: format(values.date_of_birth, "yyyy-MM-dd"),
       };
       if (customerId) {
-        await axios.patch(`${apiBaseUrl}/customers/${customerId}/`, formattedValues);
+        await axios.patch(
+          `${apiBaseUrl}/api/customers/${customerId}/`,
+          formattedValues
+        );
         toast.success("Customer information updated successfully");
       } else {
-        await axios.post(`${apiBaseUrl}/customers/`, formattedValues);
+        await axios.post(`${apiBaseUrl}/api/customers/`, formattedValues);
         toast.success("Customer created successfully");
       }
       setLoading(false);
-      navigate("/customers")
+      navigate("/customers");
     } catch (error) {
       setLoading(false);
       toast.error("Hmmm! Something went wrong. Please check and try again");
@@ -181,7 +185,7 @@ const CustomersEdit = () => {
                     <FormLabel>Salutation</FormLabel>
                     <Select
                       value={field.value}
-                      onValueChange={v => v!= "" && field.onChange(v)}
+                      onValueChange={(v) => v != "" && field.onChange(v)}
                     >
                       <FormControl>
                         <SelectTrigger>

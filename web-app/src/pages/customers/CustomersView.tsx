@@ -23,16 +23,16 @@ import { Badge } from "@/components/ui/badge";
 const CustomersView = () => {
   const { customerId } = useParams();
   const { data: customer } = useFetchSingleObject<CustomerProps>(
-    `customers/${customerId}`
+    `api/customers/${customerId}/`
   );
   const { data: customerAccounts } = useDataFetch<AccountProps>(
-    `accounts/?customer_id=${customerId}`
+    `api/customers/accounts/?customer_id=${customerId}`
   );
   const { data: customerTransactions } = useDataFetch<TransactionProps>(
-    `transactions/?customer_id=${customerId}`
+    `api/customers/transactions/?customer_id=${customerId}`
   );
   const { data: customerLoans } = useDataFetch<LoanProps>(
-    `loans/?customer_id=${customerId}`
+    `api/customers/loans/?customer_id=${customerId}`
   );
 
   return (
@@ -181,24 +181,20 @@ const CustomersView = () => {
                   </TableHeader>
                   <TableBody>
                     {customerLoans.length > 0 ? (
-                    customerLoans.slice(0, 10).map((loan) => (
-                      <TableRow key={loan.loan_id}>
-                        <TableCell>{loan.account}</TableCell>
-                        <TableCell>{loan.loan_type}</TableCell>
-                        <TableCell>
-                          ${loan.amount}
-                        </TableCell>
-                        <TableCell>
-                          ${loan.loan_balance}
-                        </TableCell>
-                        <TableCell>
-                          {loan.loan_status}
-                        </TableCell>
-                      </TableRow>
-                    ))
+                      customerLoans.slice(0, 10).map((loan) => (
+                        <TableRow key={loan.loan_id}>
+                          <TableCell>{loan.account}</TableCell>
+                          <TableCell>{loan.loan_type}</TableCell>
+                          <TableCell>${loan.amount}</TableCell>
+                          <TableCell>${loan.loan_balance}</TableCell>
+                          <TableCell>{loan.loan_status}</TableCell>
+                        </TableRow>
+                      ))
                     ) : (
                       <div className="text-center">
-                        <h1 className="text-2xl font-medium">No loans history</h1>
+                        <h1 className="text-2xl font-medium">
+                          No loans history
+                        </h1>
                       </div>
                     )}
                   </TableBody>

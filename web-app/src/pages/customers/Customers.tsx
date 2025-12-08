@@ -45,17 +45,18 @@ const columns: ColumnDef<CustomerProps>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex items-center justify-center w-8 h-8 rounded-full border border-slate-400 text-slate-600">
-          <Link to={`/customers/edit/${row.original.id}`} >
-            <LucideIcon name='Pen' size={17}/>
+          <Link to={`/customers/edit/${row.original.id}`}>
+            <LucideIcon name="Pen" size={17} />
           </Link>
         </div>
       );
     },
-  }
+  },
 ];
 
 const Customers = () => {
-  const { data, loading, error } = useDataFetch<CustomerProps>('customers');
+  const { data, loading, error } =
+    useDataFetch<CustomerProps>("api/customers/");
   // Show loading indicator when loading
   if (loading)
     return (
