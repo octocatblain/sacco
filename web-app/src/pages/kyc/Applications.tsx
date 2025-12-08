@@ -1,6 +1,7 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import KycDataView from "@/components/kyc/KycDataView";
 import type { KycApplication } from "@/types";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const loadApps = (): KycApplication[] => {
   const arrRaw = localStorage.getItem("kyc_apps");
@@ -43,6 +44,11 @@ const Applications: FC = () => {
 
   return (
     <div className="space-y-4">
+      <Breadcrumb
+        title="KYC Applications"
+        description="View all KYC applications"
+        homePath="/kyc/applications"
+      />
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">KYC Applications</h1>
         <div className="text-xs text-slate-500">{subtitle}</div>

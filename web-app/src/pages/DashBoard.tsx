@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 // types
 import { LoanProps, TransactionProps } from "@/types";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const DashBoard = () => {
   const { totalCustomers, totalAccountBalance, totalLoans, totalWithdrawals } =
@@ -49,6 +50,7 @@ const DashBoard = () => {
     : [];
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 md:gap-8 md:p-8">
+      <Breadcrumb homePath="/" />
       {/* KPI cards */}
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
         <Card x-chunk="dashboard-01-chunk-1">

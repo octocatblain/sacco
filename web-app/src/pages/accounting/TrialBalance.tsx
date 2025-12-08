@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/data-table";
+import Breadcrumb from "@/components/Breadcrumb";
 import type { TrialBalanceRow } from "@/types";
 
 export default function TrialBalance() {
@@ -66,9 +67,12 @@ export default function TrialBalance() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">Trial Balance</h1>
-      </div>
+      <Breadcrumb
+        title="Trial Balance"
+        description="Debits and credits summary"
+        homePath="/"
+      />
+      <div className="flex items-center justify-between"></div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="rounded-lg border bg-white dark:bg-blue-900 p-3">
           <div className="text-xs text-slate-500">Total Debit</div>

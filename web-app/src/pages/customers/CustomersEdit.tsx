@@ -37,6 +37,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import Spinner from "@/components/Spinner";
+import Breadcrumb from "@/components/Breadcrumb";
 // types
 import { CustomerProps } from "@/types";
 import { toast } from "react-toastify";
@@ -134,7 +135,11 @@ const CustomersEdit = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-medium">New Customer</h1>
+      <Breadcrumb
+        title={customerId ? "Edit Customer" : "New Customer"}
+        description="Create or update member information"
+        homePath="/"
+      />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* customers details */}

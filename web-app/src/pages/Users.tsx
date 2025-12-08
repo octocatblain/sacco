@@ -3,6 +3,7 @@ import { useDataFetch } from "@/hooks/useDataFetch";
 // components
 import { DataTable } from "@/components/data-table";
 import Spinner from "@/components/Spinner";
+import Breadcrumb from "@/components/Breadcrumb";
 // types
 import { UserProps } from "@/types";
 
@@ -66,6 +67,11 @@ const Users = () => {
     );
   return (
     <>
+      <Breadcrumb
+        title="Users"
+        description="Manage system user accounts"
+        homePath="/"
+      />
       <DataTable
         title="Users"
         route="/users/edit"

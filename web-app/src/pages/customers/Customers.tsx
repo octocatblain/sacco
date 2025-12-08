@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { DataTable } from "@/components/data-table";
 import Spinner from "@/components/Spinner";
 import LucideIcon from "@/components/LucideIcon";
+import Breadcrumb from "@/components/Breadcrumb";
 // types
 import { CustomerProps } from "@/types";
 
@@ -74,6 +75,11 @@ const Customers = () => {
     );
   return (
     <>
+      <Breadcrumb
+        title="Customers"
+        description="Browse and manage members"
+        homePath="/"
+      />
       <DataTable
         title="Customers"
         route="/customers/edit"

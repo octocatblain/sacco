@@ -226,20 +226,11 @@ export function DataTable<TData, TValue>({
           {title}
         </h1>
         <div className="flex w-full md:w-auto items-center gap-3">
-          {/* Global search across all columns */}
-          <Input
-            placeholder="Search all..."
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="w-full md:w-64"
-          />
-          {/* Optional column-specific filter */}
+          {/* Single search input: global search across all columns */}
           <Input
             placeholder="Search..."
-            value={(table.getColumn(filters)?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn(filters)?.setFilterValue(event.target.value)
-            }
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
             className="w-full md:w-64"
           />
           {route && btnTitle ? (

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/data-table";
+import Breadcrumb from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import type { Account, AccountType } from "@/types";
 
@@ -129,8 +130,12 @@ export default function ChartOfAccounts() {
 
   return (
     <div className="space-y-4">
+      <Breadcrumb
+        title="Chart of Accounts"
+        description="List and structure of accounts"
+        homePath="/"
+      />
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">Chart of Accounts</h1>
         <Button
           size="sm"
           onClick={() => {

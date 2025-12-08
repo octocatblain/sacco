@@ -2,6 +2,7 @@ import { FC, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
 import type { KycApplication, KycDocument, KycDocumentType } from "@/types";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const emptyApp = (): KycApplication => ({
   id: `KYC-${Date.now()}`,
@@ -107,6 +108,11 @@ const Onboarding: FC = () => {
 
   return (
     <div className="space-y-4">
+      <Breadcrumb
+        title="KYC Onboarding"
+        description="Complete your KYC application"
+        homePath="/kyc/onboarding"
+      />
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">KYC Onboarding</h1>
         <div className="text-xs">

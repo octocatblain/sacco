@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import Breadcrumb from "@/components/Breadcrumb";
 
 import ProfilePlaceholder from "@/assets/profile-placeholder.png";
 const formSchema = z.object({
@@ -108,9 +109,11 @@ const Profile = () => {
 
   return (
     <div className="max-w-3xl mx-auto mt-6 px-4">
-      <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
-        Update Profile
-      </h1>
+      <Breadcrumb
+        title="Profile"
+        description="Your account information and preferences"
+        homePath="/"
+      />
       <div className="w-full rounded-2xl bg-white dark:bg-blue-950 border border-slate-200 dark:border-blue-700 shadow-sm p-6">
         <Form {...form}>
           <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>

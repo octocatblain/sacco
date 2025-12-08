@@ -2,6 +2,7 @@ import { FC, useMemo, useState } from "react";
 import { DataTable } from "@/components/data-table";
 import { calcSchedule, computeArrears } from "@/lib/loanMath";
 import type { Repayment } from "@/types";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const Arrears: FC = () => {
   const schedule = useMemo(
@@ -22,6 +23,11 @@ const Arrears: FC = () => {
   ];
   return (
     <div className="space-y-3">
+      <Breadcrumb
+        title="Loan Arrears"
+        description="View and manage loan arrears"
+        homePath="/loans/arrears"
+      />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="rounded-lg border bg-white dark:bg-blue-900 p-3">
           <div className="text-xs text-slate-500">Total outstanding</div>

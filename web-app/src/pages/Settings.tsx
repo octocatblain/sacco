@@ -1,15 +1,18 @@
 // Components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Profile from "./Profile";
+import Breadcrumb from "@/components/Breadcrumb";
 import ChangePassword from "@/components/settings/tabs/change-password";
 import LucideIcon from "@/components/LucideIcon";
 
 const Settings = () => {
   return (
     <div className="px-4">
-      <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
-        Settings
-      </h1>
+      <Breadcrumb
+        title="Settings"
+        description="Manage your account and preferences"
+        homePath="/"
+      />
 
       <Tabs
         defaultValue="update-profile"

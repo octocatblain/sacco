@@ -4,6 +4,7 @@ import { useDataFetch } from "@/hooks/useDataFetch";
 
 // types
 import { AccountProps } from "@/types";
+import Breadcrumb from "@/components/Breadcrumb"; // Added Breadcrumb import
 // components
 import { DataTable } from "@/components/data-table";
 import LucideIcon from "@/components/LucideIcon";
@@ -53,7 +54,10 @@ const columns: ColumnDef<AccountProps>[] = [
   },
 ];
 const Accounts = () => {
-  const { data, loading, error } = useDataFetch<AccountProps>("accounts");
+  // Use the correct API endpoint to avoid 404s
+  const { data, loading, error } = useDataFetch<AccountProps>(
+    "api/customers/accounts/"
+  );
   // Show loading indicator when loading
   if (loading)
     return (
@@ -71,6 +75,11 @@ const Accounts = () => {
     );
   return (
     <>
+      <Breadcrumb
+        title="Accounts"
+        description="View and manage member accounts"
+        homePath="/"
+      />{" "}
       <DataTable
         title="Accounts"
         route="/accounts/edit"

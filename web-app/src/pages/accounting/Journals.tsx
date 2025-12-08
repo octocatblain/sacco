@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { DataTable } from "@/components/data-table";
+import Breadcrumb from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import type { JournalEntry, JournalLine, Account } from "@/types";
 
@@ -143,8 +144,12 @@ export default function Journals() {
 
   return (
     <div className="space-y-4">
+      <Breadcrumb
+        title="Journals"
+        description="Record and review journal entries"
+        homePath="/"
+      />
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">Journals</h1>
         <Button
           size="sm"
           disabled={!hasAccounts}

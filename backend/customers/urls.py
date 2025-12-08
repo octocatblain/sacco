@@ -4,12 +4,11 @@ from rest_framework import routers
 from .views import CustomerViewSet, AccountViewSet, TransactionViewSet, LoanViewSet
 
 router = routers.DefaultRouter()
-# Expose customer list/detail at /api/customers/
-router.register(r'', CustomerViewSet, basename='customers')
-# Additional resources under /api/customers/
-router.register(r'accounts', AccountViewSet)
-router.register(r'transactions', TransactionViewSet)
-router.register(r'loans', LoanViewSet)
+# Expose endpoints under /api/customers/
+router.register(r'customers', CustomerViewSet, basename='customers')
+router.register(r'accounts', AccountViewSet, basename='accounts')
+router.register(r'transactions', TransactionViewSet, basename='transactions')
+router.register(r'loans', LoanViewSet, basename='loans')
 
 urlpatterns = [
 	path('', include(router.urls)),

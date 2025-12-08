@@ -19,6 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const CustomersView = () => {
   const { customerId } = useParams();
@@ -37,7 +38,11 @@ const CustomersView = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-medium">Member Details</h1>
+      <Breadcrumb
+        title="Member Details"
+        description="Profile, accounts, transactions and loans"
+        homePath="/"
+      />
       <div className="my-5 space-y-10 lg:space-y-0 lg:grid lg:grid-cols-12 gap-8">
         <div className="col-span-3  space-y-8">
           <div className="bg-gray-200/50 p-5 rounded-md dark:bg-blue-900">

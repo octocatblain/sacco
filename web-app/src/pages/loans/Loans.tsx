@@ -8,6 +8,7 @@ import { DataTable } from "@/components/data-table";
 import LucideIcon from "@/components/LucideIcon";
 // types
 import { LoanProps } from "@/types";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const columns: ColumnDef<LoanProps>[] = [
   {
@@ -53,7 +54,10 @@ const columns: ColumnDef<LoanProps>[] = [
 ];
 
 const Loans = () => {
-  const { data, loading, error } = useDataFetch<LoanProps>("loans");
+  // Use the correct API endpoint to avoid 404s
+  const { data, loading, error } = useDataFetch<LoanProps>(
+    "api/customers/loans/"
+  );
   // Show loading indicator when loading
   if (loading)
     return (
@@ -69,18 +73,31 @@ const Loans = () => {
         Error : {error.message}
       </div>
     );
+  // Null-pointer safe normalization and totals
+  const loansArray: LoanProps[] = Array.isArray(data)
+    ? data
+    : data
+    ? ([data] as unknown as LoanProps[])
+    : [];
   const totals = {
-    count: Array.isArray(data) ? data.length : 0,
-    totalAmount: Array.isArray(data)
-      ? data.reduce((a, d: any) => a + (Number(d.amount) || 0), 0)
-      : 0,
-    totalBalance: Array.isArray(data)
-      ? data.reduce((a, d: any) => a + (Number(d.loan_balance) || 0), 0)
-      : 0,
+    count: loansArray.length,
+    totalAmount: loansArray.reduce(
+      (a, d: any) => a + (Number(d?.amount) || 0),
+      0
+    ),
+    totalBalance: loansArray.reduce(
+      (a, d: any) => a + (Number(d?.loan_balance) || 0),
+      0
+    ),
   };
 
   return (
     <div className="space-y-3">
+      <Breadcrumb
+        title="Loans"
+        description="Manage loan applications and statuses"
+        homePath="/loans"
+      />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="rounded-lg border bg-white dark:bg-blue-900 p-3">
           <div className="text-xs text-slate-500">Total loans</div>
@@ -104,8 +121,8 @@ const Loans = () => {
         btnTitle="Apply Loan"
         route="/loans/edit"
         columns={columns}
-        data={data}
-        filters="account"
+        data={loansArray}
+        filters="loan_type"
       />
     </div>
   );

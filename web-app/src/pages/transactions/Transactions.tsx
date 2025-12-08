@@ -4,6 +4,7 @@ import { useDataFetch } from "@/hooks/useDataFetch";
 // components
 import { DataTable } from "@/components/data-table";
 import Spinner from "@/components/Spinner";
+import Breadcrumb from "@/components/Breadcrumb"; // Import Breadcrumb
 // types
 import { TransactionProps } from "@/types";
 
@@ -39,8 +40,10 @@ const columns: ColumnDef<TransactionProps>[] = [
 ];
 
 const Transactions = () => {
-  const { data, loading, error } =
-    useDataFetch<TransactionProps>("transactions");
+  // Use the correct API endpoint to avoid 404s
+  const { data, loading, error } = useDataFetch<TransactionProps>(
+    "api/customers/transactions/"
+  );
   // Show loading indicator when loading
   if (loading)
     return (
@@ -58,6 +61,12 @@ const Transactions = () => {
     );
   return (
     <>
+      <Breadcrumb
+        title="Transactions"
+        description="Browse and audit transaction history"
+        homePath="/"
+      />{" "}
+      {/* Breadcrumb component */}
       <DataTable
         title="Transactions"
         route="/transactions/edit"
