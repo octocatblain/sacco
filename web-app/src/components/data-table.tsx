@@ -10,6 +10,9 @@ import {
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { CirclePlus } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
 // components
 import {
   Table,
@@ -40,17 +43,70 @@ export function DataTable<TData, TValue>({
   filters,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [globalFilter, setGlobalFilter] = useState<string>("");
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       columnFilters,
+      globalFilter,
     },
   });
+
+  const getExportData = () => {
+    const headers = table.getVisibleLeafColumns().map((col) => {
+      const h = col.columnDef.header;
+      return typeof h === "string" ? h : col.id;
+    });
+
+    const rows = table.getRowModel().rows.map((row) =>
+      row.getVisibleCells().map((cell) => {
+        const val = cell.getValue() as unknown;
+        if (val === null || val === undefined) return "";
+        if (typeof val === "object") {
+          try {
+            return JSON.stringify(val);
+          } catch {
+            return String(val);
+          }
+        }
+        return String(val);
+      })
+    );
+
+    return { headers, rows };
+  };
+
+  const exportToPDF = () => {
+    const { headers, rows } = getExportData();
+    const doc = new jsPDF({ orientation: "landscape" });
+    autoTable(doc, {
+      head: [headers],
+      body: rows,
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [138, 185, 241] },
+    });
+    const name = `${title || "data"}-${new Date()
+      .toISOString()
+      .slice(0, 10)}.pdf`;
+    doc.save(name);
+  };
+
+  const exportToExcel = () => {
+    const { headers, rows } = getExportData();
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    XLSX.utils.book_append_sheet(wb, ws, "Data");
+    const name = `${title || "data"}-${new Date()
+      .toISOString()
+      .slice(0, 10)}.xlsx`;
+    XLSX.writeFile(wb, name);
+  };
 
   return (
     <div className="rounded-lg border bg-white dark:bg-blue-900">
@@ -60,6 +116,14 @@ export function DataTable<TData, TValue>({
           {title}
         </h1>
         <div className="flex w-full md:w-auto items-center gap-3">
+          {/* Global search across all columns */}
+          <Input
+            placeholder="Search all..."
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="w-full md:w-64"
+          />
+          {/* Optional column-specific filter */}
           <Input
             placeholder="Search..."
             value={(table.getColumn(filters)?.getFilterValue() as string) ?? ""}
@@ -74,6 +138,19 @@ export function DataTable<TData, TValue>({
               {btnTitle}
             </Button>
           </Link>
+          {/* Export actions */}
+          <Button
+            onClick={exportToPDF}
+            className="bg-white border text-slate-800 hover:bg-slate-50"
+          >
+            Export PDF
+          </Button>
+          <Button
+            onClick={exportToExcel}
+            className="bg-white border text-slate-800 hover:bg-slate-50"
+          >
+            Export Excel
+          </Button>
         </div>
       </div>
       {/* Table */}
