@@ -1,6 +1,6 @@
 # SACCO management system using React and Django
 
-**Open SACCO** is a comprehensive SACCO management system designed to streamline operations for Savings and Credit Cooperative Organizations (SACCOs). The platform is built with a Django REST API backend and a React.js frontend, offering a seamless and user-friendly experience.
+**SLMS** is a comprehensive SACCO management system designed to streamline operations for Savings and Credit Cooperative Organizations (SACCOs). The platform is built with a Django REST API backend and a React.js frontend, offering a seamless and user-friendly experience.
 
 ---
 
@@ -154,6 +154,3 @@ License
 
 This project is licensed under the MIT License.
 
-Contact
-
-For inquiries or support, reach out to isaacmain254.
