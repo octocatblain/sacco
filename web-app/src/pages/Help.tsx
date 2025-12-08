@@ -40,7 +40,7 @@ const Help = () => {
           <div className="mt-6 rounded-md bg-primary/15 border border-primary/30 p-4">
             <h3 className="text-base font-semibold mb-1">Contact Support</h3>
             <p className="text-sm">
-              Email: support@slms.example.com • Phone: +1 (555) 123-4567
+              Email: support@slms.softclans.co.ke • Phone: +1 (555) 123-4567
             </p>
           </div>
         </div>
