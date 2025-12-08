@@ -35,7 +35,6 @@ const sidebarStructure: Array<LeafItem | GroupItem> = [
   { label: "Users", icon: "Users", to: "/users" },
   { label: "Notifications", icon: "Bell", to: "/notifications" },
   { label: "Settings", icon: "Settings", to: "/settings" },
-  { label: "Help", icon: "CircleHelp", to: "/help" },
   {
     label: "Savings",
     icon: "PiggyBank",
@@ -48,6 +47,15 @@ const sidebarStructure: Array<LeafItem | GroupItem> = [
       },
     ],
   },
+  {
+    label: "KYC",
+    icon: "IdCard",
+    children: [
+      { to: "/kyc/onboarding", label: "Onboarding", icon: "UserPlus" },
+      { to: "/kyc/applications", label: "Applications", icon: "List" },
+    ],
+  },
+  { label: "Help", icon: "CircleHelp", to: "/help" },
 ];
 const SidebarLinks: FC<SidebarLinksProps> = ({
   onClick,

@@ -242,12 +242,14 @@ export function DataTable<TData, TValue>({
             }
             className="w-full md:w-64"
           />
-          <Link to={route ? route : ""}>
-            <Button className="flex gap-x-2 bg-primary text-black hover:opacity-90">
-              <CirclePlus size={18} />
-              {btnTitle}
-            </Button>
-          </Link>
+          {route && btnTitle ? (
+            <Link to={route}>
+              <Button className="flex gap-x-2 bg-primary text-black hover:opacity-90">
+                <CirclePlus size={18} />
+                {btnTitle}
+              </Button>
+            </Link>
+          ) : null}
           {/* Export actions */}
           <Button
             onClick={exportToPDF}

@@ -131,6 +131,69 @@ export interface Contribution {
   notes?: string;
 }
 
+// KYC / Onboarding domain
+export type KycStatus =
+  | "draft"
+  | "submitted"
+  | "in_review"
+  | "approved"
+  | "rejected"
+  | "need_more_info";
+
+export type KycDocumentType =
+  | "id_front"
+  | "id_back"
+  | "selfie"
+  | "proof_of_address"
+  | "other";
+
+export interface KycDocument {
+  id: string;
+  type: KycDocumentType;
+  name: string; // original filename
+  mimeType: string;
+  size: number;
+  url?: string; // object URL or CDN url after upload
+}
+
+export interface KycApplication {
+  id: string;
+  customerId?: string; // link to customer profile
+  createdAt: string;
+  updatedAt: string;
+  status: KycStatus;
+  personal: {
+    firstName: string;
+    lastName: string;
+    middleName?: string;
+    dob: string; // ISO date
+    nationalIdType: string; // e.g. ID, Passport
+    nationalIdNumber: string;
+    phone: string;
+    email: string;
+  };
+  address: {
+    line1: string;
+    line2?: string;
+    city: string;
+    state?: string;
+    country: string;
+    postalCode?: string;
+  };
+  risk?: {
+    pep?: boolean;
+    sanctionsHit?: boolean;
+    riskScore?: number;
+  };
+  documents: KycDocument[];
+  reviewer?: {
+    assignedTo?: string; // user id or email
+    reviewedAt?: string;
+    decision?: "approved" | "rejected" | "need_more_info";
+    notes?: string;
+  };
+}
+
 export interface Repayment {
   id: string;
   loanId: string;
@@ -176,6 +239,47 @@ export interface NotificationItem {
 }
 
 // types/auth.ts
+// Accounting domain
+export type AccountType = "ASSET" | "LIABILITY" | "EQUITY" | "INCOME" | "EXPENSE";
+
+export type Account = {
+  id: number;
+  code: string;
+  name: string;
+  type: AccountType;
+  parent?: number | null;
+  is_active: boolean;
+  currency: string;
+};
+
+export type JournalLine = {
+  id?: number;
+  account: number;
+  memo?: string;
+  debit?: number;
+  credit?: number;
+};
+
+export type JournalEntry = {
+  id?: number;
+  date: string;
+  reference?: string;
+  narration?: string;
+  posted?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  lines: JournalLine[];
+};
+
+export type TrialBalanceRow = {
+  account__id: number;
+  account__code: string;
+  account__name: string;
+  account__type: AccountType;
+  debit: number;
+  credit: number;
+  balance: number;
+};
 export interface User {
   id: number;
   username: string;

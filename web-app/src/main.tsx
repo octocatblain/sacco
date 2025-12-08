@@ -39,6 +39,8 @@ import AdminProducts from "./pages/savings/AdminProducts.tsx";
 import UserContributions from "./pages/savings/UserContributions.tsx";
 import Help from "./pages/Help.tsx";
 import Notifications from "./pages/Notifications.tsx";
+import Onboarding from "./pages/kyc/Onboarding.tsx";
+import Applications from "./pages/kyc/Applications.tsx";
 
 const router = createBrowserRouter([
   {
@@ -133,6 +135,14 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <Profile />,
+      },
+      {
+        path: "/kyc/onboarding",
+        element: <Onboarding />,
+      },
+      {
+        path: "/kyc/applications",
+        element: <Applications />,
       },
     ],
   },
