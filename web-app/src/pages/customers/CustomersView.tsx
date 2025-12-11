@@ -42,30 +42,34 @@ const CustomersView = () => {
   };
   const customerAccounts: AccountProps[] = [
     {
-      account_number: "AC-001",
+      account_number: 1001,
       customer: customer.id,
-      account_type: "savings",
+      account_type: "Savings",
       balance: 5000,
-      status: "active",
+      status: "Active",
+      date_opened: new Date("2023-01-01"),
     },
   ];
   const customerTransactions: TransactionProps[] = [
     {
       transaction_id: "T-001",
-      account: "AC-001",
-      transaction_type: "deposit",
+      account: 1001,
+      transaction_type: "Deposit",
       amount: 1000,
-      transaction_date: new Date("2025-12-01").toISOString(),
+      transaction_date: new Date("2025-12-01"),
+      description: "Deposit to savings",
+      served_by: "admin",
     },
   ];
   const customerLoans: LoanProps[] = [
     {
       loan_id: "L-001",
-      account: "AC-001",
-      loan_type: "personal",
+      account: 1001,
+      loan_type: "Personal",
       amount: 10000,
       loan_balance: 5000,
-      loan_status: "active",
+      loan_status: "Active",
+      date_approved: new Date("2025-11-01"),
     },
   ];
 

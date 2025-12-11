@@ -4,12 +4,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-
-import { useFetchSingleObject } from "@/hooks/useFetchSingleObject";
 import { cn } from "@/lib/utils";
-import { apiBaseUrl } from "@/constants";
 // components
 import { Input } from "@/components/ui/input";
 // import { Label } from "@/components/ui/label";
@@ -27,6 +23,7 @@ import {
   SelectContent,
   SelectTrigger,
   SelectValue,
+  SelectItem,
 } from "@/components/ui/select";
 import {
   Popover,
@@ -75,73 +72,49 @@ const CustomersEdit = () => {
   const { customerId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const { data: customer } = useFetchSingleObject<CustomerProps>(
-    `api/customers/${customerId}/`,
-    customerId ? true : false
-  );
+  // Fakedata for customer details
+  const FAKE_CUSTOMER: CustomerProps = {
+    id: customerId ? Number(customerId) : 1,
+    first_name: "John",
+    last_name: "Doe",
+    middle_name: "M.",
+    salutation: "Mr.",
+    email: "john@example.com",
+    phone_number: "0712345678",
+    id_number: "12345678",
+    tax_number: "A1234567",
+    country: "Kenya",
+    county: "Nairobi",
+    city: "Nairobi",
+    po_box: 1234,
+    date_of_birth: new Date("1990-01-01"),
+  };
+  const customer = FAKE_CUSTOMER;
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      salutation: "",
-      first_name: "",
-      middle_name: "",
-      last_name: "",
-      id_number: "",
-      phone_number: "",
-      email: "",
-      tax_number: "",
-      country: "",
-      county: "",
-      city: "",
-      po_box: 0,
-    },
-    // Fakedata for customer details
-    const FAKE_CUSTOMER: CustomerProps = {
-      id: customerId ? Number(customerId) : 1,
-      first_name: "John",
-      last_name: "Doe",
-      middle_name: "M.",
-      salutation: "Mr.",
-      email: "john@example.com",
-      phone_number: "0712345678",
-      id_number: "12345678",
-      tax_number: "A1234567",
-      country: "Kenya",
-      county: "Nairobi",
-      city: "Nairobi",
-      po_box: 1234,
-      date_of_birth: new Date("1990-01-01"),
-    };
-    const customer = FAKE_CUSTOMER;
+    defaultValues: customer,
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    // Just log and fake success
     console.log(values);
     setLoading(true);
-    try {
-      // Format the date_of_birth to YYYY-MM-DD
-      const formattedValues = {
-        ...values,
-        date_of_birth: format(values.date_of_birth, "yyyy-MM-dd"),
-      };
-      if (customerId) {
-        await axios.patch(
-          `${apiBaseUrl}/api/customers/${customerId}/`,
-          formattedValues
-        );
-        toast.success("Customer information updated successfully");
-      } else {
-        await axios.post(`${apiBaseUrl}/api/customers/`, formattedValues);
-        toast.success("Customer created successfully");
-      }
+    setTimeout(() => {
       setLoading(false);
+      toast.success("Customer information updated (fakedata)");
       navigate("/customers");
-    } catch (error) {
-      // Just log and fake success
-      console.log(values);
-      setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-        toast.success("Customer information updated (fakedata)");
-        navigate("/customers");
-      }, 1000);
+    }, 1000);
+  }
+  return (
+    <div className="container mx-auto py-10">
+      <Breadcrumb
+        title="Edit Customer"
+        description="Modify member information"
+        homePath="/"
+      />
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="bg-gray-200/50 my-5 p-5 rounded-md dark:bg-blue-900">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 pb-5">
               {/* <FormField
@@ -448,6 +421,7 @@ const CustomersEdit = () => {
           <Button type="submit">Submit</Button>
         </form>
       </Form>
+      {loading && <Spinner />}
     </div>
   );
 };
