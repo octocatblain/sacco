@@ -155,7 +155,9 @@ const AccountsEdit = () => {
                               <SelectItem value="Active">Active</SelectItem>
                               <SelectItem value="Closed">Closed</SelectItem>
                               <SelectItem value="Dormant">Dormant</SelectItem>
-                              <SelectItem value="Suspended">Suspended</SelectItem>
+                              <SelectItem value="Suspended">
+                                Suspended
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -172,3 +174,6 @@ const AccountsEdit = () => {
       )}
     </div>
   );
+};
+
+export default AccountsEdit;
