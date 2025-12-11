@@ -62,7 +62,7 @@ const SignIn: FC = () => {
             className="w-64 h-64 object-contain mb-6"
           />
           <div className="max-w-md text-center">
-            <h1 className="text-3xl font-semibold mb-2">Welcome to SLAMS</h1>
+            <h1 className="text-3xl font-semibold mb-2">Welcome to SLMS</h1>
             <p className="text-sm md:text-base text-slate-600 dark:text-slate-300">
               Savings and Loan Management System. <br />
               Please sign in to continue.
@@ -77,11 +77,11 @@ const SignIn: FC = () => {
               <div className="w-25 h-20">
                 <img
                   src={Logo}
-                  alt="SLAMS logo"
+                  alt="SLMS logo"
                   className="w-full h-full object-contain"
                 />
               </div>
-              <h3 className="pt-2 text-3xl font-semibold">SLAMS</h3>
+              <h3 className="pt-2 text-3xl font-semibold">SLMS</h3>
               <p className="text-xl text-slate-600 dark:text-slate-300">
                 Savings and Loan Management System
               </p>

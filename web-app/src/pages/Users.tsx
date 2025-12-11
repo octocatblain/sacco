@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { useDataFetch } from "@/hooks/useDataFetch";
+import { useState } from "react";
 // components
 import { DataTable } from "@/components/data-table";
 import Spinner from "@/components/Spinner";
@@ -42,29 +42,31 @@ const columns: ColumnDef<UserProps>[] = [
   },
 ];
 
+// Fake data for users
+const FAKE_USERS: UserProps[] = [
+  {
+    id: 1,
+    username: "admin",
+    email: "admin@example.com",
+    profile: {
+      profile_image: "",
+      role_display: "Administrator",
+    },
+  },
+  {
+    id: 2,
+    username: "jane",
+    email: "jane@example.com",
+    profile: {
+      profile_image: "",
+      role_display: "User",
+    },
+  },
+];
+
 const Users = () => {
-  const { data, loading, error } = useDataFetch<UserProps>("users");
-
-  // Show loading indicator when loading
-  if (loading)
-    return (
-      <div className="w-full min-h-[50vh] flex justify-center items-center">
-        <Spinner />
-      </div>
-    );
-
-  // handling error
-  if (error)
-    return (
-      <div className="w-full min-h-[40vh] flex items-center justify-center">
-        <div className="rounded-xl bg-white dark:bg-blue-950 border border-slate-200 dark:border-blue-700 shadow-sm p-6 text-center max-w-md">
-          <h2 className="text-lg font-semibold mb-2">Unable to load users</h2>
-          <p className="text-sm text-slate-600 dark:text-slate-300">
-            {error.message}
-          </p>
-        </div>
-      </div>
-    );
+  const [data] = useState<UserProps[]>(FAKE_USERS);
+  // No loading or error states with fakedata
   return (
     <>
       <Breadcrumb

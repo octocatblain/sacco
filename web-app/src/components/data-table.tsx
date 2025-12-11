@@ -111,7 +111,7 @@ export function DataTable<TData, TValue>({
       "Nairobi - Kenya",
       "",
       "Email:",
-      "info(at)softclans.co.ke",
+      "info(at)k2an.com",
       "",
       "Phone & Fax:",
       "011 5630531",

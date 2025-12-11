@@ -14,28 +14,26 @@ import EditGuarantorDialog from "@/components/loans/EditGuarantorDialog";
 
 const LoansView: FC = () => {
   const { loanId } = useParams();
-  const [principal, setPrincipal] = useState<number>(() =>
-    Number(localStorage.getItem("loan_principal") || 100000)
-  );
-  const [annualRate, setAnnualRate] = useState<number>(() =>
-    Number(localStorage.getItem("loan_rate") || 0.18)
-  );
-  const [termMonths, setTermMonths] = useState<number>(() =>
-    Number(localStorage.getItem("loan_term") || 12)
-  );
+  // Fakedata for loan view
+  const [principal, setPrincipal] = useState<number>(100000);
+  const [annualRate, setAnnualRate] = useState<number>(0.18);
+  const [termMonths, setTermMonths] = useState<number>(12);
   const [schedule, setSchedule] = useState<LoanScheduleItem[]>(() =>
-    calcSchedule({ principal, annualRate, termMonths })
+    calcSchedule({ principal: 100000, annualRate: 0.18, termMonths: 12 })
   );
-  const [repayments, setRepayments] = useState<Repayment[]>(() => {
-    const raw = localStorage.getItem("loan_repayments");
-    return raw ? JSON.parse(raw) : [];
-  });
-  const [guarantors, setGuarantors] = useState<Guarantor[]>(() => {
-    const raw = localStorage.getItem("loan_guarantors");
-    return raw
-      ? JSON.parse(raw)
-      : [{ id: "g1", name: "Jane Doe", liability: 20000 }];
-  });
+  const [repayments, setRepayments] = useState<Repayment[]>([
+    {
+      id: "r1",
+      loanId: loanId || "L-1",
+      amount: 10000,
+      date: new Date().toISOString(),
+      method: "cash",
+      notes: "Initial payment",
+    },
+  ]);
+  const [guarantors, setGuarantors] = useState<Guarantor[]>([
+    { id: "g1", name: "Jane Doe", liability: 20000 },
+  ]);
 
   const arrears = useMemo(
     () => computeArrears(schedule, repayments),

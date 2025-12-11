@@ -70,7 +70,7 @@ const NavBar: FC<NavBarProps> = ({
     <div className="max-w-full relative flex items-center justify-between text-white bg-primary h-16 px-4 dark:bg-blue-800 dark:text-slate-300">
       {/* Left: Brand */}
       <div className="flex items-center gap-x-3">
-        <img src={Logo} alt="SLAMS logo" className="w-15 h-10" />
+        <img src={Logo} alt="SLMS logo" className="w-15 h-10" />
         <span className="text-xl font-semibold tracking-wide text-black">
           SLMS
         </span>

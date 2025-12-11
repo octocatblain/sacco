@@ -1,22 +1,38 @@
-import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/data-table";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import type { Account, AccountType } from "@/types";
 
-const load = (): Account[] => {
-  try {
-    return JSON.parse(localStorage.getItem("acc_accounts") || "[]");
-  } catch {
-    return [];
-  }
-};
-
-const save = (rows: Account[]) =>
-  localStorage.setItem("acc_accounts", JSON.stringify(rows));
+// Fake data for accounts
+const FAKE_ACCOUNTS: Account[] = [
+  {
+    id: 1,
+    code: "1001",
+    name: "Cash",
+    type: "ASSET",
+    currency: "KES",
+    is_active: true,
+  },
+  {
+    id: 2,
+    code: "2001",
+    name: "Accounts Payable",
+    type: "LIABILITY",
+    currency: "KES",
+    is_active: true,
+  },
+  {
+    id: 3,
+    code: "3001",
+    name: "Equity",
+    type: "EQUITY",
+    currency: "KES",
+    is_active: true,
+  },
+];
 
 export default function ChartOfAccounts() {
-  const [rows, setRows] = useState<Account[]>(() => load());
+  const [rows, setRows] = useState<Account[]>(() => FAKE_ACCOUNTS);
   const [form, setForm] = useState<Partial<Account>>({
     type: "ASSET",
     is_active: true,
@@ -25,9 +41,7 @@ export default function ChartOfAccounts() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    save(rows);
-  }, [rows]);
+  // No localStorage or API, just fakedata
 
   const columns = useMemo(
     () => [

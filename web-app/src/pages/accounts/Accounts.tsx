@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
-import { useDataFetch } from "@/hooks/useDataFetch";
+import { useState } from "react";
 
 // types
 import { AccountProps } from "@/types";
@@ -18,24 +18,29 @@ const columns: ColumnDef<AccountProps>[] = [
       return (
         <div>
           <Link to={`/accounts/view/${row.original.account_number}`}>
-            {row.original.account_number}
-          </Link>
-        </div>
-      );
+        // Fake data for accounts
+        const FAKE_ACCOUNTS: AccountProps[] = [
+          {
+            account_number: "AC-001",
+            customer: 1,
+            account_type: "savings",
+            balance: 5000,
+            status: "active",
+          },
+          {
+            account_number: "AC-002",
+            customer: 2,
+            account_type: "current",
+            balance: 12000,
+            status: "inactive",
+          },
+        ];
+
+        const [data] = useState<AccountProps[]>(FAKE_ACCOUNTS);
+        const loading = false;
+        const error = null;
     },
-  },
-  {
-    accessorKey: "customer",
-    header: "Customer ID",
-  },
-  {
-    accessorKey: "account_type",
-    header: "Account Type",
-  },
-  {
-    accessorKey: "balance",
-    header: "Balance",
-  },
+        // No loading or error states with fakedata
   {
     accessorKey: "status",
     header: "Status",

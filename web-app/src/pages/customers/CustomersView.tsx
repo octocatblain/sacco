@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useFetchSingleObject } from "@/hooks/useFetchSingleObject";
+// import { useFetchSingleObject } from "@/hooks/useFetchSingleObject";
 // types
 import {
   AccountProps,
@@ -7,7 +7,7 @@ import {
   LoanProps,
   TransactionProps,
 } from "@/types";
-import { useDataFetch } from "@/hooks/useDataFetch";
+// import { useDataFetch } from "@/hooks/useDataFetch";
 // components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -23,18 +23,51 @@ import Breadcrumb from "@/components/Breadcrumb";
 
 const CustomersView = () => {
   const { customerId } = useParams();
-  const { data: customer } = useFetchSingleObject<CustomerProps>(
-    `api/customers/${customerId}/`
-  );
-  const { data: customerAccounts } = useDataFetch<AccountProps>(
-    `api/customers/accounts/?customer_id=${customerId}`
-  );
-  const { data: customerTransactions } = useDataFetch<TransactionProps>(
-    `api/customers/transactions/?customer_id=${customerId}`
-  );
-  const { data: customerLoans } = useDataFetch<LoanProps>(
-    `api/customers/loans/?customer_id=${customerId}`
-  );
+  // Fakedata for customer details
+  const customer: CustomerProps = {
+    id: customerId ? Number(customerId) : 1,
+    first_name: "John",
+    last_name: "Doe",
+    middle_name: "M.",
+    salutation: "Mr.",
+    email: "john@example.com",
+    phone_number: "0712345678",
+    id_number: "12345678",
+    tax_number: "A1234567",
+    country: "Kenya",
+    county: "Muranga",
+    city: "Nairobi",
+    po_box: 1234,
+    date_of_birth: new Date("1990-01-01"),
+  };
+  const customerAccounts: AccountProps[] = [
+    {
+      account_number: "AC-001",
+      customer: customer.id,
+      account_type: "savings",
+      balance: 5000,
+      status: "active",
+    },
+  ];
+  const customerTransactions: TransactionProps[] = [
+    {
+      transaction_id: "T-001",
+      account: "AC-001",
+      transaction_type: "deposit",
+      amount: 1000,
+      transaction_date: new Date("2025-12-01").toISOString(),
+    },
+  ];
+  const customerLoans: LoanProps[] = [
+    {
+      loan_id: "L-001",
+      account: "AC-001",
+      loan_type: "personal",
+      amount: 10000,
+      loan_balance: 5000,
+      loan_status: "active",
+    },
+  ];
 
   return (
     <div>

@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
-import {  useParams, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { apiBaseUrl } from "@/constants";
-// custom hooks
-import { useFetchSingleObject } from "@/hooks/useFetchSingleObject";
+import { useParams, useNavigate } from "react-router-dom";
 // types
 import { AccountProps } from "@/types";
 // components
@@ -37,8 +32,8 @@ const formSchema = z.object({
     message: "Required",
   }),
   account_type: z.string().refine((value) => value !== "", {
-      message: "Required",
-     }),
+    message: "Required",
+  }),
   // status: z.string().refine((value) => value !== "", {
   //   message: "Required",
   // }),
@@ -48,15 +43,17 @@ const formSchema = z.object({
 const AccountsEdit = () => {
   const { accountNo } = useParams();
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  // TODO: This is just a working solution, using condition on custom hook is breaking React rules
-  // Fetch account data
-  const { data: accountDetails } = useFetchSingleObject<AccountProps>(
-    `accounts/${accountNo}`,
-    accountNo ? true : false
-  );
-  console.log(accountDetails);
+  // Fakedata for account details
+  const FAKE_ACCOUNT: AccountProps = {
+    account_number: accountNo || "AC-001",
+    customer: 1,
+    account_type: "savings",
+    balance: 5000,
+    status: "active",
+  };
+  const accountDetails = FAKE_ACCOUNT;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

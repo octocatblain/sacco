@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
 
-import { useDataFetch } from "@/hooks/useDataFetch";
+import { useState } from "react";
 // componnts
 import Spinner from "@/components/Spinner";
 import { DataTable } from "@/components/data-table";
@@ -53,32 +53,30 @@ const columns: ColumnDef<LoanProps>[] = [
   },
 ];
 
-const Loans = () => {
-  // Use the correct API endpoint to avoid 404s
-  const { data, loading, error } = useDataFetch<LoanProps>(
-    "api/customers/loans/"
-  );
-  // Show loading indicator when loading
-  if (loading)
-    return (
-      <div className="w-full min-h-screen flex justify-center items-center">
-        <Spinner />
-      </div>
-    );
+// Fake data for loans
+const FAKE_LOANS: LoanProps[] = [
+  {
+    loan_id: "L-001",
+    account: "AC-001",
+    loan_type: "personal",
+    amount: 10000,
+    loan_balance: 5000,
+    loan_status: "active",
+  },
+  {
+    loan_id: "L-002",
+    account: "AC-002",
+    loan_type: "business",
+    amount: 20000,
+    loan_balance: 12000,
+    loan_status: "closed",
+  },
+];
 
-  // handling error
-  if (error)
-    return (
-      <div className="w-full min-h-screen flex justify-center items-center">
-        Error : {error.message}
-      </div>
-    );
-  // Null-pointer safe normalization and totals
-  const loansArray: LoanProps[] = Array.isArray(data)
-    ? data
-    : data
-    ? ([data] as unknown as LoanProps[])
-    : [];
+const Loans = () => {
+  const [data] = useState<LoanProps[]>(FAKE_LOANS);
+  // No loading or error states with fakedata
+  const loansArray: LoanProps[] = data;
   const totals = {
     count: loansArray.length,
     totalAmount: loansArray.reduce(

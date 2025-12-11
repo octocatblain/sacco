@@ -1,46 +1,32 @@
-import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/data-table";
 import Breadcrumb from "@/components/Breadcrumb";
 import type { TrialBalanceRow } from "@/types";
 
-export default function TrialBalance() {
-  const [rows, setRows] = useState<TrialBalanceRow[]>([]);
-  const [start] = useState<string>("");
-  const [end] = useState<string>("");
+// Fake data for trial balance rows
+const FAKE_TRIAL_BALANCE: TrialBalanceRow[] = [
+  {
+    account__id: 1,
+    account__code: "1001",
+    account__name: "Cash",
+    account__type: "ASSET",
+    debit: 10000,
+    credit: 0,
+    balance: 10000,
+  },
+  {
+    account__id: 2,
+    account__code: "2001",
+    account__name: "Accounts Payable",
+    account__type: "LIABILITY",
+    debit: 0,
+    credit: 10000,
+    balance: -10000,
+  },
+];
 
-  useEffect(() => {
-    // local computation from stored journals
-    try {
-      const journals = JSON.parse(
-        localStorage.getItem("acc_journals") || "[]"
-      ) as any[];
-      const map: Record<string, TrialBalanceRow> = {} as any;
-      journals
-        .filter((j) => j.posted)
-        .forEach((j) => {
-          j.lines.forEach((l: any) => {
-            const key = String(l.account);
-            if (!map[key])
-              map[key] = {
-                account__id: l.account,
-                account__code: String(l.account),
-                account__name: String(l.account),
-                account__type: "ASSET",
-                debit: 0,
-                credit: 0,
-                balance: 0,
-              } as any;
-            map[key].debit += Number(l.debit || 0);
-            map[key].credit += Number(l.credit || 0);
-          });
-        });
-      const list = Object.values(map).map((r) => ({
-        ...r,
-        balance: r.debit - r.credit,
-      }));
-      setRows(list);
-    } catch {}
-  }, [start, end]);
+export default function TrialBalance() {
+  const [rows] = useState<TrialBalanceRow[]>(() => FAKE_TRIAL_BALANCE);
+  // No localStorage or API, just fakedata
 
   const columns = useMemo(
     () => [

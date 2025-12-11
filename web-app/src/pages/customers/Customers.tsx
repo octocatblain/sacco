@@ -1,5 +1,5 @@
 // import Button from "@/components/Button";
-import { useDataFetch } from "@/hooks/useDataFetch";
+import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
 // components
@@ -55,24 +55,33 @@ const columns: ColumnDef<CustomerProps>[] = [
   },
 ];
 
-const Customers = () => {
-  const { data, loading, error } =
-    useDataFetch<CustomerProps>("api/customers/");
-  // Show loading indicator when loading
-  if (loading)
-    return (
-      <div className="w-full min-h-screen flex justify-center items-center">
-        <Spinner />
-      </div>
-    );
+// Fake data for customers
+const FAKE_CUSTOMERS: CustomerProps[] = [
+  {
+    id: 1,
+    first_name: "John",
+    last_name: "Doe",
+    email: "john@example.com",
+    phone_number: "0712345678",
+    id_number: "12345678",
+    salutation: "Mr.",
+    middle_name: "M.",
+  },
+  {
+    id: 2,
+    first_name: "Jane",
+    last_name: "Smith",
+    email: "jane@example.com",
+    phone_number: "0798765432",
+    id_number: "87654321",
+    salutation: "Ms.",
+    middle_name: "A.",
+  },
+];
 
-  // handling error
-  if (error)
-    return (
-      <div className="w-full min-h-screen flex justify-center items-center">
-        Error : {error.message}
-      </div>
-    );
+const Customers = () => {
+  const [data] = useState<CustomerProps[]>(FAKE_CUSTOMERS);
+  // No loading or error states with fakedata
   return (
     <>
       <Breadcrumb

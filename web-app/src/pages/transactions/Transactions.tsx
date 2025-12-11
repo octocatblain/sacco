@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
-import { useDataFetch } from "@/hooks/useDataFetch";
+import { useState } from "react";
 // components
 import { DataTable } from "@/components/data-table";
 import Spinner from "@/components/Spinner";
@@ -39,26 +39,27 @@ const columns: ColumnDef<TransactionProps>[] = [
   },
 ];
 
-const Transactions = () => {
-  // Use the correct API endpoint to avoid 404s
-  const { data, loading, error } = useDataFetch<TransactionProps>(
-    "api/customers/transactions/"
-  );
-  // Show loading indicator when loading
-  if (loading)
-    return (
-      <div className="w-full min-h-screen flex justify-center items-center">
-        <Spinner />
-      </div>
-    );
+// Fake data for transactions
+const FAKE_TRANSACTIONS: TransactionProps[] = [
+  {
+    transaction_id: "T-001",
+    account: "AC-001",
+    transaction_type: "deposit",
+    amount: 1000,
+    transaction_date: "2025-12-01",
+  },
+  {
+    transaction_id: "T-002",
+    account: "AC-002",
+    transaction_type: "withdrawal",
+    amount: 500,
+    transaction_date: "2025-12-02",
+  },
+];
 
-  // handling error
-  if (error)
-    return (
-      <div className="w-full min-h-screen flex justify-center items-center">
-        Error : {error.message}
-      </div>
-    );
+const Transactions = () => {
+  const [data] = useState<TransactionProps[]>(FAKE_TRANSACTIONS);
+  // No loading or error states with fakedata
   return (
     <>
       <Breadcrumb

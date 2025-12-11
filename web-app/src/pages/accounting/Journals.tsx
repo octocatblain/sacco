@@ -1,28 +1,43 @@
-import { useMemo, useState } from "react";
 import { DataTable } from "@/components/data-table";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import type { JournalEntry, JournalLine, Account } from "@/types";
 
-const loadAccounts = (): Account[] => {
-  try {
-    return JSON.parse(localStorage.getItem("acc_accounts") || "[]");
-  } catch {
-    return [];
-  }
-};
-const loadJournals = (): JournalEntry[] => {
-  try {
-    return JSON.parse(localStorage.getItem("acc_journals") || "[]");
-  } catch {
-    return [];
-  }
-};
-const saveJournals = (rows: JournalEntry[]) =>
-  localStorage.setItem("acc_journals", JSON.stringify(rows));
+// Fake data for accounts and journals
+const FAKE_ACCOUNTS: Account[] = [
+  {
+    id: 1,
+    code: "1001",
+    name: "Cash",
+    type: "ASSET",
+    currency: "KES",
+    is_active: true,
+  },
+  {
+    id: 2,
+    code: "2001",
+    name: "Accounts Payable",
+    type: "LIABILITY",
+    currency: "KES",
+    is_active: true,
+  },
+];
+const FAKE_JOURNALS: JournalEntry[] = [
+  {
+    id: 1,
+    date: "2025-12-01",
+    reference: "JV-001",
+    narration: "Initial capital",
+    posted: true,
+    lines: [
+      { account: 1, debit: 10000, credit: 0 },
+      { account: 2, debit: 0, credit: 10000 },
+    ],
+  },
+];
 
 export default function Journals() {
-  const [entries, setEntries] = useState<JournalEntry[]>(() => loadJournals());
+  const [entries, setEntries] = useState<JournalEntry[]>(() => FAKE_JOURNALS);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<JournalEntry>({
     date: new Date().toISOString().slice(0, 10),
@@ -32,8 +47,10 @@ export default function Journals() {
     lines: [],
   });
   const [open, setOpen] = useState(false);
-  const accounts = loadAccounts();
+  const accounts = FAKE_ACCOUNTS;
   const hasAccounts = Array.isArray(accounts) && accounts.length > 0;
+
+  // No localStorage or API, just fakedata
 
   const balanced = useMemo(() => {
     const d = (form.lines || []).reduce((s, l) => s + (l.debit || 0), 0);

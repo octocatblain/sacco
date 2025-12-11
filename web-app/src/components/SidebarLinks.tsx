@@ -11,30 +11,26 @@ interface SidebarLinksProps {
 type LeafItem = { label: string; icon: string; to: string };
 type GroupItem = { label: string; icon: string; children: LeafItem[] };
 
+// Professional logical arrangement for savings & loan management system
 const sidebarStructure: Array<LeafItem | GroupItem> = [
   { label: "Dashboard", icon: "BarChart4", to: "/" },
   {
-    label: "Operations",
-    icon: "Workflow",
+    label: "Members",
+    icon: "Users",
     children: [
       { label: "Customers", icon: "Users", to: "/customers" },
+      { label: "KYC Onboarding", icon: "UserPlus", to: "/kyc/onboarding" },
+      { label: "KYC Applications", icon: "List", to: "/kyc/applications" },
+    ],
+  },
+  {
+    label: "Accounts",
+    icon: "CreditCard",
+    children: [
       { label: "Accounts", icon: "CreditCard", to: "/accounts" },
       { label: "Transactions", icon: "Wallet", to: "/transactions" },
     ],
   },
-  {
-    label: "Loans",
-    icon: "Wallet",
-    children: [
-      { label: "All Loans", icon: "Wallet", to: "/loans" },
-      { label: "Arrears", icon: "Alert", to: "/loans/arrears" },
-      { label: "Collections", icon: "FileWarning", to: "/loans/collections" },
-      { label: "Alerts", icon: "Bell", to: "/loans/alerts" },
-    ],
-  },
-  { label: "Users", icon: "Users", to: "/users" },
-  { label: "Notifications", icon: "Bell", to: "/notifications" },
-  { label: "Settings", icon: "Settings", to: "/settings" },
   {
     label: "Savings",
     icon: "PiggyBank",
@@ -48,11 +44,13 @@ const sidebarStructure: Array<LeafItem | GroupItem> = [
     ],
   },
   {
-    label: "KYC",
-    icon: "IdCard",
+    label: "Loans",
+    icon: "Wallet",
     children: [
-      { to: "/kyc/onboarding", label: "Onboarding", icon: "UserPlus" },
-      { to: "/kyc/applications", label: "Applications", icon: "List" },
+      { label: "All Loans", icon: "Wallet", to: "/loans" },
+      { label: "Arrears", icon: "Alert", to: "/loans/arrears" },
+      { label: "Collections", icon: "FileWarning", to: "/loans/collections" },
+      { label: "Alerts", icon: "Bell", to: "/loans/alerts" },
     ],
   },
   {
@@ -60,18 +58,21 @@ const sidebarStructure: Array<LeafItem | GroupItem> = [
     icon: "BookOpen",
     children: [
       {
-        to: "/accounting/chart-of-accounts",
         label: "Chart of Accounts",
         icon: "ListOrdered",
+        to: "/accounting/chart-of-accounts",
       },
-      { to: "/accounting/journals", label: "Journals", icon: "Notebook" },
+      { label: "Journals", icon: "Notebook", to: "/accounting/journals" },
       {
-        to: "/accounting/trial-balance",
         label: "Trial Balance",
         icon: "Scale",
+        to: "/accounting/trial-balance",
       },
     ],
   },
+  { label: "Users", icon: "Users", to: "/users" },
+  { label: "Notifications", icon: "Bell", to: "/notifications" },
+  { label: "Settings", icon: "Settings", to: "/settings" },
   { label: "Help", icon: "CircleHelp", to: "/help" },
 ];
 const SidebarLinks: FC<SidebarLinksProps> = ({
@@ -86,7 +87,15 @@ const SidebarLinks: FC<SidebarLinksProps> = ({
   };
 
   return (
-    <ul className={`space-y-2 ${collapsed ? "px-2" : ""}`}>
+    <ul
+      className={`space-y-2 ${collapsed ? "px-2" : ""}`}
+      style={{
+        maxHeight: "calc(100vh - 60px)",
+        overflowY: "auto",
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+      }}
+    >
       {sidebarStructure.map((item) => {
         // Render leaf link
         if ((item as LeafItem).to) {
@@ -188,6 +197,9 @@ const SidebarLinks: FC<SidebarLinksProps> = ({
           </li>
         );
       })}
+      <style>{`
+        ul::-webkit-scrollbar { display: none; }
+      `}</style>
     </ul>
   );
 };
