@@ -5,8 +5,8 @@ import type { TrialBalanceRow } from "@/types";
 
 export default function TrialBalance() {
   const [rows, setRows] = useState<TrialBalanceRow[]>([]);
-  const [start, setStart] = useState<string>("");
-  const [end, setEnd] = useState<string>("");
+  const [start] = useState<string>("");
+  const [end] = useState<string>("");
 
   useEffect(() => {
     // local computation from stored journals

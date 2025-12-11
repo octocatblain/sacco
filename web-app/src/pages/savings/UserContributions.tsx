@@ -6,7 +6,7 @@ import type {
   ContributionScheduleItem,
   SavingsProduct,
 } from "@/types";
-import { calcSchedule } from "@/lib/loanMath"; // reuse for date cadence example
+// import { calcSchedule } from "@/lib/loanMath"; // removed unused import
 import { Button } from "@/components/ui/button";
 
 const mockProducts: SavingsProduct[] = [
@@ -23,7 +23,7 @@ const mockProducts: SavingsProduct[] = [
 
 const UserContributions: FC = () => {
   const [selectedProduct] = useState<SavingsProduct>(mockProducts[0]);
-  const [standingOrders, setStandingOrders] = useState<StandingOrder[]>([
+  const [standingOrders] = useState<StandingOrder[]>([
     {
       id: "SO-1",
       accountId: "AC-1",

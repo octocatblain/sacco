@@ -46,15 +46,15 @@ const Onboarding: FC = () => {
     }
   };
 
-  const setField = (path: (a: KycApplication) => any, value: any) => {
-    const next = structuredClone(app);
-    // naive path setter
-    const ref: any = next;
-    if (typeof path === "function") {
-      // handled below by specific setters instead of dynamic eval
-    }
-    return next;
-  };
+  // const setField = (path: (a: KycApplication) => any, value: any) => {
+  //   const next = structuredClone(app);
+  //   // naive path setter
+  //   const ref: any = next;
+  //   if (typeof path === "function") {
+  //     // handled below by specific setters instead of dynamic eval
+  //   }
+  //   return next;
+  // };
 
   const canSubmit = useMemo(() => {
     const p = app.personal;

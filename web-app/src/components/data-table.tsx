@@ -42,7 +42,7 @@ export function DataTable<TData, TValue>({
   route,
   btnTitle,
   title,
-  filters,
+  // filters, // removed unused variable
   reportHeading,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -181,7 +181,8 @@ export function DataTable<TData, TValue>({
       headStyles: { fillColor: [138, 185, 241], textColor: 20, halign: "left" },
       alternateRowStyles: { fillColor: [245, 248, 252] },
       margin: { top: 110, right: 36, bottom: 42, left: 36 },
-      didDrawPage: (data: any) => {
+      didDrawPage: () => {
+        // removed unused variable 'data'
         // Draw header on subsequent pages
         const isFirstDraw = (doc as any).__header_drawn__;
         if (!isFirstDraw) {
