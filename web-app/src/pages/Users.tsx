@@ -49,7 +49,7 @@ const FAKE_USERS: UserProps[] = [
     username: "admin",
     email: "admin@example.com",
     profile: {
-      profile_image: "",
+      profile_image: new File([""], "profile-placeholder.png"),
       role_display: "Administrator",
     },
   },
@@ -58,7 +58,7 @@ const FAKE_USERS: UserProps[] = [
     username: "jane",
     email: "jane@example.com",
     profile: {
-      profile_image: "",
+      profile_image: new File([""], "profile-placeholder.png"),
       role_display: "User",
     },
   },
