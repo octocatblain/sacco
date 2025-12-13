@@ -1,5 +1,6 @@
 // import Button from "@/components/Button";
 import { useState, useCallback } from "react";
+import { useRef } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
 import { useDataFetch } from "@/hooks/useDataFetch";
@@ -26,16 +27,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 
-const columns: ColumnDef<
-  CustomerProps & {
-    onView?: (c: CustomerProps) => void;
-    onEdit?: (c: CustomerProps) => void;
-  }
->[] = [
+const columnsBuilder = (
+  onConfirm: (action: string, customer: CustomerProps) => void
+) => [
   {
     accessorKey: "id",
     header: "Customer ID",
-    cell: ({ row }) => {
+    cell: ({ row }: any) => {
       return (
         <div>
           <Link to={`/customers/view/${row.original.id}`}>
@@ -48,7 +46,7 @@ const columns: ColumnDef<
   {
     accessorKey: "first_name",
     header: "Name",
-    cell: ({ row }) =>
+    cell: ({ row }: any) =>
       `${row.original.salutation} ${row.original.first_name} ${row.original.last_name}`,
   },
   {
@@ -58,7 +56,7 @@ const columns: ColumnDef<
   {
     accessorKey: "kyc_status",
     header: "KYC",
-    cell: ({ row }) => (
+    cell: ({ row }: any) => (
       <Badge
         variant={
           row.original.kyc_status === "Verified" ? "default" : "secondary"
@@ -71,14 +69,14 @@ const columns: ColumnDef<
   {
     accessorKey: "created_at",
     header: "Joined",
-    cell: ({ row }) =>
+    cell: ({ row }: any) =>
       row.original.created_at
         ? format(new Date(row.original.created_at), "dd MMM yyyy")
         : "N/A",
   },
   {
     header: "Actions",
-    cell: ({ row }) => {
+    cell: ({ row }: any) => {
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -97,13 +95,19 @@ const columns: ColumnDef<
             >
               <LucideIcon name="Pen" size={16} className="mr-2" /> Edit Customer
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => alert("Send Email")}>
+            <DropdownMenuItem
+              onClick={() => onConfirm("Send Email", row.original)}
+            >
               <LucideIcon name="Mail" size={16} className="mr-2" /> Send Email
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => alert("Call Customer")}>
+            <DropdownMenuItem
+              onClick={() => onConfirm("Call Customer", row.original)}
+            >
               <LucideIcon name="Phone" size={16} className="mr-2" /> Call
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => alert("Deactivate Customer")}>
+            <DropdownMenuItem
+              onClick={() => onConfirm("Deactivate Customer", row.original)}
+            >
               <LucideIcon name="UserX" size={16} className="mr-2" /> Deactivate
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -297,6 +301,11 @@ const Customers = () => {
     open: boolean;
     customer: CustomerProps | null;
   }>({ open: false, customer: null });
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    action: string;
+    customer: CustomerProps | null;
+  }>({ open: false, action: "", customer: null });
 
   const handleView = useCallback((customer: CustomerProps) => {
     setViewModal({ open: true, customer });
@@ -306,6 +315,11 @@ const Customers = () => {
   }, []);
   const closeView = () => setViewModal({ open: false, customer: null });
   const closeEdit = () => setEditModal({ open: false, customer: null });
+  const handleConfirm = (action: string, customer: CustomerProps) => {
+    setConfirmDialog({ open: true, action, customer });
+  };
+  const closeConfirm = () =>
+    setConfirmDialog({ open: false, action: "", customer: null });
 
   // Attach handlers to each row
   const customersArray = data.map((c) => ({
@@ -365,11 +379,33 @@ const Customers = () => {
         route="/customers/edit"
         btnTitle="Create Customer"
         data={customersArray}
-        columns={columns}
+        columns={columnsBuilder(handleConfirm)}
         filters="id,first_name,last_name,phone_number"
         searchable
         exportable
       />
+      {/* Confirmation Dialog */}
+      <Dialog open={confirmDialog.open} onOpenChange={closeConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Action</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to <b>{confirmDialog.action}</b>
+              {confirmDialog.customer
+                ? ` for customer ${confirmDialog.customer.first_name} ${confirmDialog.customer.last_name}?`
+                : "?"}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="default" onClick={closeConfirm}>
+              Yes
+            </Button>
+            <DialogClose asChild>
+              <Button variant="secondary">Cancel</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* View Modal */}
       <Dialog open={viewModal.open} onOpenChange={closeView}>

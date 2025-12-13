@@ -1,6 +1,7 @@
 import { DataTable } from "@/components/data-table";
 import Breadcrumb from "@/components/Breadcrumb";
 import type { TrialBalanceRow } from "@/types";
+import { useMemo, useState } from "react";
 
 // Fake data for trial balance rows
 const FAKE_TRIAL_BALANCE: TrialBalanceRow[] = [

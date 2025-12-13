@@ -1,7 +1,26 @@
+"use client";
+
 import { DataTable } from "@/components/data-table";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import LucideIcon from "@/components/LucideIcon";
 import type { JournalEntry, JournalLine, Account } from "@/types";
+import { useMemo, useState } from "react";
 
 // Fake data for accounts and journals
 const FAKE_ACCOUNTS: Account[] = [
@@ -30,8 +49,30 @@ const FAKE_JOURNALS: JournalEntry[] = [
     narration: "Initial capital",
     posted: true,
     lines: [
-      { account: 1, debit: 10000, credit: 0 },
-      { account: 2, debit: 0, credit: 10000 },
+      { account: 1, debit: 10000, credit: 0, memo: "Cash in" },
+      { account: 2, debit: 0, credit: 10000, memo: "Payable" },
+    ],
+  },
+  {
+    id: 2,
+    date: "2025-12-02",
+    reference: "JV-002",
+    narration: "Office supplies purchase",
+    posted: false,
+    lines: [
+      { account: 1, debit: 0, credit: 2000, memo: "Cash out" },
+      { account: 2, debit: 2000, credit: 0, memo: "Supplies expense" },
+    ],
+  },
+  {
+    id: 3,
+    date: "2025-12-03",
+    reference: "JV-003",
+    narration: "Loan repayment",
+    posted: true,
+    lines: [
+      { account: 1, debit: 5000, credit: 0, memo: "Repayment in" },
+      { account: 2, debit: 0, credit: 5000, memo: "Loan out" },
     ],
   },
 ];
@@ -47,6 +88,10 @@ export default function Journals() {
     lines: [],
   });
   const [open, setOpen] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    id: null as number | null,
+  });
   const accounts = FAKE_ACCOUNTS;
   const hasAccounts = Array.isArray(accounts) && accounts.length > 0;
 
@@ -112,6 +157,8 @@ export default function Journals() {
   };
   const del = (id: number) =>
     setEntries((prev) => prev.filter((e) => (e as any).id !== id));
+  const handleConfirm = (id: number) => setConfirmDialog({ open: true, id });
+  const closeConfirm = () => setConfirmDialog({ open: false, id: null });
 
   const columns = useMemo(
     () => [
@@ -128,22 +175,23 @@ export default function Journals() {
         header: "Actions",
         id: "actions",
         cell: ({ row }: any) => (
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => startEdit(row.original)}
-            >
-              View/Edit
-            </Button>
-            <Button
-              size="sm"
-              variant="destructive"
-              onClick={() => del((row.original as any).id)}
-            >
-              Delete
-            </Button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="outline" className="rounded-full p-0">
+                <LucideIcon name="Pen" className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => startEdit(row.original)}>
+                <LucideIcon name="Eye" size={16} className="mr-2" /> View/Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => handleConfirm((row.original as any).id)}
+              >
+                <LucideIcon name="Trash2" size={16} className="mr-2" /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         ),
       },
     ],
@@ -155,7 +203,7 @@ export default function Journals() {
 
   // persist entries
   useMemo(() => {
-    saveJournals(entries);
+    // saveJournals(entries);
     return entries;
   }, [entries]);
 
@@ -333,6 +381,32 @@ export default function Journals() {
           </div>
         </div>
       )}
+
+      {/* Confirmation Dialog */}
+      <Dialog open={confirmDialog.open} onOpenChange={closeConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Delete</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this journal entry?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="default"
+              onClick={() => {
+                if (confirmDialog.id !== null) del(confirmDialog.id);
+                closeConfirm();
+              }}
+            >
+              Yes
+            </Button>
+            <DialogClose asChild>
+              <Button variant="secondary">Cancel</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <DataTable
         columns={columns}

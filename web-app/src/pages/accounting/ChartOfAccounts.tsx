@@ -1,7 +1,26 @@
+"use client";
+
 import { DataTable } from "@/components/data-table";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import LucideIcon from "@/components/LucideIcon";
 import type { Account, AccountType } from "@/types";
+import { useMemo, useState } from "react";
 
 // Fake data for accounts
 const FAKE_ACCOUNTS: Account[] = [
@@ -43,6 +62,18 @@ export default function ChartOfAccounts() {
 
   // No localStorage or API, just fakedata
 
+  const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    action: "",
+    account: null as Account | null,
+  });
+
+  const handleConfirm = (action: string, account: Account) => {
+    setConfirmDialog({ open: true, action, account });
+  };
+  const closeConfirm = () =>
+    setConfirmDialog({ open: false, action: "", account: null });
+
   const columns = useMemo(
     () => [
       { header: "Code", accessorKey: "code" },
@@ -53,22 +84,29 @@ export default function ChartOfAccounts() {
         header: "Actions",
         id: "actions",
         cell: ({ row }: any) => (
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => startEdit(row.original)}
-            >
-              Edit
-            </Button>
-            <Button
-              size="sm"
-              variant="destructive"
-              onClick={() => remove(row.original.id)}
-            >
-              Delete
-            </Button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="outline" className="rounded-full p-0">
+                <LucideIcon name="Pen" className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => startEdit(row.original)}>
+                <LucideIcon name="Pen" size={16} className="mr-2" /> Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => handleConfirm("Delete", row.original)}
+              >
+                <LucideIcon name="Trash2" size={16} className="mr-2" /> Delete
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => handleConfirm("Deactivate", row.original)}
+              >
+                <LucideIcon name="UserX" size={16} className="mr-2" />{" "}
+                Deactivate
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         ),
       },
     ],
@@ -141,15 +179,19 @@ export default function ChartOfAccounts() {
 
   const remove = (id: number) =>
     setRows((prev) => prev.filter((r) => r.id !== id));
+  const deactivate = (id: number) =>
+    setRows((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, is_active: false } : r))
+    );
 
   return (
     <div className="space-y-4">
-      <Breadcrumb
-        title="Chart of Accounts"
-        description="List and structure of accounts"
-        homePath="/"
-      />
       <div className="flex items-center justify-between">
+        <Breadcrumb
+          title="Chart of Accounts"
+          description="List and structure of accounts"
+          homePath="/"
+        />
         <Button
           size="sm"
           onClick={() => {
@@ -252,6 +294,38 @@ export default function ChartOfAccounts() {
           </div>
         </div>
       )}
+
+      {/* Confirmation Dialog */}
+      <Dialog open={confirmDialog.open} onOpenChange={closeConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Action</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to <b>{confirmDialog.action}</b>
+              {confirmDialog.account
+                ? ` account ${confirmDialog.account.code} - ${confirmDialog.account.name}?`
+                : "?"}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="default"
+              onClick={() => {
+                if (confirmDialog.action === "Delete")
+                  remove(confirmDialog.account!.id);
+                if (confirmDialog.action === "Deactivate")
+                  deactivate(confirmDialog.account!.id);
+                closeConfirm();
+              }}
+            >
+              Yes
+            </Button>
+            <DialogClose asChild>
+              <Button variant="secondary">Cancel</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <DataTable
         columns={columns}
