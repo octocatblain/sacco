@@ -2,9 +2,9 @@
 import { useState, useCallback } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
-// components
+import { useDataFetch } from "@/hooks/useDataFetch";
+import { CustomerProps } from "@/types";
 import { DataTable } from "@/components/data-table";
-import Spinner from "@/components/Spinner";
 import LucideIcon from "@/components/LucideIcon";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";
@@ -23,8 +23,8 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-// types
-import { CustomerProps } from "@/types";
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
 
 const columns: ColumnDef<
   CustomerProps & {
@@ -46,32 +46,35 @@ const columns: ColumnDef<
     },
   },
   {
-    accessorKey: "profile_pic",
-    header: "Profile",
-    cell: ({ row }: any) => (
-      <img
-        src={row.original.profile_pic}
-        alt="Profile"
-        className="w-8 h-8 rounded-full object-cover"
-      />
-    ),
-  },
-  {
     accessorKey: "first_name",
-    header: "First Name",
+    header: "Name",
+    cell: ({ row }) =>
+      `${row.original.salutation} ${row.original.first_name} ${row.original.last_name}`,
   },
   {
     accessorKey: "last_name",
     header: "Last Name",
   },
   {
-    accessorKey: "email",
-    header: "Email",
+    accessorKey: "kyc_status",
+    header: "KYC",
+    cell: ({ row }) => (
+      <Badge
+        variant={
+          row.original.kyc_status === "Verified" ? "default" : "secondary"
+        }
+      >
+        {row.original.kyc_status || "Pending"}
+      </Badge>
+    ),
   },
-  { accessorKey: "phone_number", header: "Phone Number" },
   {
-    accessorKey: "id_number",
-    header: "ID Number",
+    accessorKey: "created_at",
+    header: "Joined",
+    cell: ({ row }) =>
+      row.original.created_at
+        ? format(new Date(row.original.created_at), "dd MMM yyyy")
+        : "N/A",
   },
   {
     header: "Actions",
@@ -111,7 +114,7 @@ const columns: ColumnDef<
 ];
 
 // Expanded fake data with more customers and random profile pictures
-const FAKE_CUSTOMERS: (CustomerProps & { profile_pic: string })[] = [
+const FAKE_CUSTOMERS: (any & { profile_pic: string })[] = [
   {
     id: 1,
     first_name: "Sipho",
@@ -363,7 +366,9 @@ const Customers = () => {
         btnTitle="Create Customer"
         data={customersArray}
         columns={columns}
-        filters="email"
+        filters="id,first_name,last_name,phone_number"
+        searchable
+        exportable
       />
 
       {/* View Modal */}

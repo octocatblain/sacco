@@ -1,31 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useParams, useNavigate } from "react-router-dom";
-// types
-import { AccountProps } from "@/types";
-// components
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { apiBaseUrl } from "@/constants";
+import { useFetchSingleObject } from "@/hooks/useFetchSingleObject";
+import { AccountProps } from "@/types";
 import { Input } from "@/components/ui/input";
 import {
   Select,
-  SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectItem,
 } from "@/components/ui/select";
-import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import Spinner from "@/components/Spinner";
 
-// form schema validation with zod
 const formSchema = z.object({
   // customer: z.string(coerce.number()),
   customer: z.coerce.number().min(1, {
@@ -38,19 +40,24 @@ const formSchema = z.object({
   //   message: "Required",
   // }),
   status: z.string().optional(),
+  balance: z.coerce.number().min(0, "Balance cannot be negative").optional(),
+  interest_rate: z.coerce.number().min(0).optional(),
+  maturity_date: z.string().optional(),
+  kyc_completed: z.boolean().default(false),
+  id_document: z.string().optional(),
 });
 
 const AccountsEdit = () => {
   const { accountNo } = useParams();
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   // Fakedata for account details
   let accountNumberValue = 1001;
   if (accountNo && /^[0-9]+$/.test(accountNo)) {
     accountNumberValue = Number(accountNo);
   }
-  const FAKE_ACCOUNT: AccountProps = {
+  const FAKE_ACCOUNT: any = {
     account_number: accountNumberValue,
     customer: 1,
     account_type: "Savings",
@@ -65,6 +72,11 @@ const AccountsEdit = () => {
       customer: FAKE_ACCOUNT.customer,
       account_type: FAKE_ACCOUNT.account_type,
       status: FAKE_ACCOUNT.status,
+      balance: FAKE_ACCOUNT.balance,
+      interest_rate: 0,
+      maturity_date: "",
+      kyc_completed: false,
+      id_document: "",
     },
   });
 
@@ -86,7 +98,9 @@ const AccountsEdit = () => {
         </div>
       ) : (
         <div>
-          <h1 className="text-2xl font-medium">New Account</h1>
+          <h1 className="text-2xl font-medium">
+            {accountNo ? `Edit Account #${accountNo}` : "New Account"}
+          </h1>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="bg-gray-200/50 my-5 p-5 rounded-md dark:bg-blue-900">
@@ -148,7 +162,7 @@ const AccountsEdit = () => {
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select an account type" />
+                                <SelectValue placeholder="Select an account status" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>

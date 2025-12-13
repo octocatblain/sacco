@@ -29,6 +29,9 @@ export type CustomerProps = {
   phone_number: string;
   email: string;
   date_of_birth: Date;
+  
+  kyc_status: "Verified" | "Pending" | "Rejected";
+  created_at: Date;
   tax_number: string;
   country: string;
   county: string;
@@ -41,12 +44,15 @@ export type AccountProps = {
   account_type: "Savings" | "Current" | "Fixed" | "Joint" | "Corporate";
   status: "Active" | "Closed" | "Dormant" | "Suspended";
   balance: number;
+  interest_rate: number;
   date_opened: Date;
   customer: number;
+  customer_name?: string;
 };
 
 export type TransactionProps = {
   transaction_id: string;
+  customer_id: string;
   transaction_type: "Deposit" | "Withdrawal" | "Transfer" | "Payment";
   amount: number;
   transaction_date: Date;

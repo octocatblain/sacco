@@ -1,9 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-
 import { useState, useCallback } from "react";
-// componnts
 import { DataTable } from "@/components/data-table";
 import LucideIcon from "@/components/LucideIcon";
 import { Button } from "@/components/ui/button";
