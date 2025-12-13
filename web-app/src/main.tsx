@@ -28,7 +28,7 @@ import TransactionsEdit from "./pages/transactions/TransactionsEdit.tsx";
 import Settings from "./pages/Settings.tsx";
 import Loans from "./pages/loans/Loans.tsx";
 import Users from "./pages/Users.tsx";
-import Profile from "./pages/Profile.tsx";
+import Profile from "./pages/settings/Profile.tsx";
 import { ThemeContextProvider } from "./contexts/ThemeContext.tsx";
 import LoansEdit from "./pages/loans/LoansEdit.tsx";
 import LoansView from "./pages/loans/LoansView.tsx";
@@ -44,6 +44,7 @@ import Applications from "./pages/kyc/Applications.tsx";
 import ChartOfAccounts from "./pages/accounting/ChartOfAccounts.tsx";
 import Journals from "./pages/accounting/Journals.tsx";
 import TrialBalance from "./pages/accounting/TrialBalance.tsx";
+import UserSettingsPage from "./pages/settings/UserSettingsPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -120,8 +121,16 @@ const router = createBrowserRouter([
         element: <UserContributions />,
       },
       {
-        path: "/settings",
+        path: "/settings/system",
         element: <Settings />,
+      },
+      {
+        path: "/settings/profile",
+        element: <Profile />,
+      },
+      {
+        path: "/settings/user",
+        element: <UserSettingsPage />,
       },
       {
         path: "/help",

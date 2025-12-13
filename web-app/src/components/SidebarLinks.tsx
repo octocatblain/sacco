@@ -72,7 +72,24 @@ const sidebarStructure: Array<LeafItem | GroupItem> = [
   },
   { label: "Users", icon: "Users", to: "/users" },
   { label: "Notifications", icon: "Bell", to: "/notifications" },
-  { label: "Settings", icon: "Settings", to: "/settings" },
+  {
+    label: "Settings",
+    icon: "Settings",
+    children: [
+      {
+        label: "Profile Settings",
+        icon: "UserCog",
+        to: "/settings/profile",
+      },
+
+      { label: "User Settings", icon: "Users", to: "/settings/user" },
+      {
+        label: "System Settings",
+        icon: "Sliders",
+        to: "/settings/system",
+      },
+    ],
+  },
   { label: "Help", icon: "CircleHelp", to: "/help" },
 ];
 const SidebarLinks: FC<SidebarLinksProps> = ({
