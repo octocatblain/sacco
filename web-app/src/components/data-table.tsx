@@ -45,11 +45,16 @@ export function DataTable<TData, TValue>({
   route,
   btnTitle,
   title,
-  filters,
+  // filters, // removed unused variable
   reportHeading,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
   const table = useReactTable({
     data,
     columns,
@@ -61,7 +66,9 @@ export function DataTable<TData, TValue>({
     state: {
       columnFilters,
       globalFilter,
+      pagination,
     },
+    onPaginationChange: setPagination,
   });
 
   const getExportData = () => {
@@ -114,7 +121,7 @@ export function DataTable<TData, TValue>({
       "Nairobi - Kenya",
       "",
       "Email:",
-      "info(at)softclans.co.ke",
+      "info(at)k2an.com",
       "",
       "Phone & Fax:",
       "011 5630531",
@@ -184,7 +191,8 @@ export function DataTable<TData, TValue>({
       headStyles: { fillColor: [138, 185, 241], textColor: 20, halign: "left" },
       alternateRowStyles: { fillColor: [245, 248, 252] },
       margin: { top: 110, right: 36, bottom: 42, left: 36 },
-      didDrawPage: (data: any) => {
+      didDrawPage: () => {
+        // removed unused variable 'data'
         // Draw header on subsequent pages
         const isFirstDraw = (doc as any).__header_drawn__;
         if (!isFirstDraw) {
@@ -229,28 +237,21 @@ export function DataTable<TData, TValue>({
           {title}
         </h1>
         <div className="flex w-full md:w-auto items-center gap-3">
-          {/* Global search across all columns */}
+          {/* Single search input: global search across all columns */}
           <Input
-            placeholder="Search all..."
+            placeholder="Search..."
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
             className="w-full md:w-64"
           />
-          {/* Optional column-specific filter */}
-          <Input
-            placeholder="Search..."
-            value={(table.getColumn(filters)?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn(filters)?.setFilterValue(event.target.value)
-            }
-            className="w-full md:w-64"
-          />
-          <Link to={route ? route : ""}>
-            <Button className="flex gap-x-2 bg-primary text-black hover:opacity-90">
-              <CirclePlus size={18} />
-              {btnTitle}
-            </Button>
-          </Link>
+          {route && btnTitle ? (
+            <Link to={route}>
+              <Button className="flex gap-x-2 bg-primary text-black hover:opacity-90">
+                <CirclePlus size={18} />
+                {btnTitle}
+              </Button>
+            </Link>
+          ) : null}
           {/* Export actions */}
           <Button
             onClick={exportToPDF}
@@ -325,7 +326,7 @@ export function DataTable<TData, TValue>({
         <div className="flex items-center gap-2">
           <button
             className="px-3 py-2 rounded-md border bg-white hover:bg-slate-50 disabled:opacity-50"
-            onClick={() => table.firstPage()}
+            onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
             {"<<"}
@@ -346,7 +347,7 @@ export function DataTable<TData, TValue>({
           </button>
           <button
             className="px-3 py-2 rounded-md border bg-white hover:bg-slate-50 disabled:opacity-50"
-            onClick={() => table.lastPage()}
+            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
             {">>"}
@@ -366,7 +367,7 @@ export function DataTable<TData, TValue>({
               type="number"
               min="1"
               max={table.getPageCount()}
-              defaultValue={table.getState().pagination.pageIndex + 1}
+              value={table.getState().pagination.pageIndex + 1}
               onChange={(e) => {
                 const page = e.target.value ? Number(e.target.value) - 1 : 0;
                 table.setPageIndex(page);

@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useFetchSingleObject } from "@/hooks/useFetchSingleObject";
+// import { useFetchSingleObject } from "@/hooks/useFetchSingleObject";
 // types
 import {
   AccountProps,
@@ -7,7 +7,7 @@ import {
   LoanProps,
   TransactionProps,
 } from "@/types";
-import { useDataFetch } from "@/hooks/useDataFetch";
+// import { useDataFetch } from "@/hooks/useDataFetch";
 // components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -19,25 +19,67 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const CustomersView = () => {
   const { customerId } = useParams();
-  const { data: customer } = useFetchSingleObject<CustomerProps>(
-    `customers/${customerId}`
-  );
-  const { data: customerAccounts } = useDataFetch<AccountProps>(
-    `accounts/?customer_id=${customerId}`
-  );
-  const { data: customerTransactions } = useDataFetch<TransactionProps>(
-    `transactions/?customer_id=${customerId}`
-  );
-  const { data: customerLoans } = useDataFetch<LoanProps>(
-    `loans/?customer_id=${customerId}`
-  );
+  // Fakedata for customer details
+  const customer: CustomerProps = {
+    id: customerId ? Number(customerId) : 1,
+    first_name: "John",
+    last_name: "Doe",
+    middle_name: "M.",
+    salutation: "Mr.",
+    email: "john@example.com",
+    phone_number: "0712345678",
+    id_number: "12345678",
+    tax_number: "A1234567",
+    country: "Kenya",
+    county: "Muranga",
+    city: "Nairobi",
+    po_box: 1234,
+    date_of_birth: new Date("1990-01-01"),
+  };
+  const customerAccounts: AccountProps[] = [
+    {
+      account_number: 1001,
+      customer: customer.id,
+      account_type: "Savings",
+      balance: 5000,
+      status: "Active",
+      date_opened: new Date("2023-01-01"),
+    },
+  ];
+  const customerTransactions: TransactionProps[] = [
+    {
+      transaction_id: "T-001",
+      account: 1001,
+      transaction_type: "Deposit",
+      amount: 1000,
+      transaction_date: new Date("2025-12-01"),
+      description: "Deposit to savings",
+      served_by: "admin",
+    },
+  ];
+  const customerLoans: LoanProps[] = [
+    {
+      loan_id: "L-001",
+      account: 1001,
+      loan_type: "Personal",
+      amount: 10000,
+      loan_balance: 5000,
+      loan_status: "Active",
+      date_approved: new Date("2025-11-01"),
+    },
+  ];
 
   return (
     <div>
-      <h1 className="text-2xl font-medium">Member Details</h1>
+      <Breadcrumb
+        title="Member Details"
+        description="Profile, accounts, transactions and loans"
+        homePath="/"
+      />
       <div className="my-5 space-y-10 lg:space-y-0 lg:grid lg:grid-cols-12 gap-8">
         <div className="col-span-3  space-y-8">
           <div className="bg-gray-200/50 p-5 rounded-md dark:bg-blue-900">
@@ -181,24 +223,20 @@ const CustomersView = () => {
                   </TableHeader>
                   <TableBody>
                     {customerLoans.length > 0 ? (
-                    customerLoans.slice(0, 10).map((loan) => (
-                      <TableRow key={loan.loan_id}>
-                        <TableCell>{loan.account}</TableCell>
-                        <TableCell>{loan.loan_type}</TableCell>
-                        <TableCell>
-                          ${loan.amount}
-                        </TableCell>
-                        <TableCell>
-                          ${loan.loan_balance}
-                        </TableCell>
-                        <TableCell>
-                          {loan.loan_status}
-                        </TableCell>
-                      </TableRow>
-                    ))
+                      customerLoans.slice(0, 10).map((loan) => (
+                        <TableRow key={loan.loan_id}>
+                          <TableCell>{loan.account}</TableCell>
+                          <TableCell>{loan.loan_type}</TableCell>
+                          <TableCell>${loan.amount}</TableCell>
+                          <TableCell>${loan.loan_balance}</TableCell>
+                          <TableCell>{loan.loan_status}</TableCell>
+                        </TableRow>
+                      ))
                     ) : (
                       <div className="text-center">
-                        <h1 className="text-2xl font-medium">No loans history</h1>
+                        <h1 className="text-2xl font-medium">
+                          No loans history
+                        </h1>
                       </div>
                     )}
                   </TableBody>

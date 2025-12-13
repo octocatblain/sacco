@@ -1,10 +1,30 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
-import { useDataFetch } from "@/hooks/useDataFetch";
+import { useState } from "react";
 import { AccountProps } from "@/types";
+import Breadcrumb from "@/components/Breadcrumb";
 import { DataTable } from "@/components/data-table";
 import LucideIcon from "@/components/LucideIcon";
-import Spinner from "@/components/Spinner";
+
+// Fake data for accounts
+const FAKE_ACCOUNTS: AccountProps[] = [
+  {
+    account_number: 1001,
+    customer: 1,
+    account_type: "Savings",
+    balance: 5000,
+    status: "Active",
+    date_opened: new Date("2023-01-01"),
+  },
+  {
+    account_number: 1002,
+    customer: 2,
+    account_type: "Current",
+    balance: 12000,
+    status: "Active",
+    date_opened: new Date("2023-02-01"),
+  },
+];
 import { formatCurrency } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -13,7 +33,10 @@ const columns: ColumnDef<AccountProps>[] = [
     accessorKey: "account_number",
     header: "Account Number",
     cell: ({ row }) => (
-      <Link to={`/accounts/view/${row.original.account_number}`} className="text-blue-600 hover:underline font-medium">
+      <Link
+        to={`/accounts/view/${row.original.account_number}`}
+        className="text-blue-600 hover:underline font-medium"
+      >
         {row.original.account_number}
       </Link>
     ),
@@ -35,7 +58,11 @@ const columns: ColumnDef<AccountProps>[] = [
         Joint: "bg-pink-100 text-pink-800",
         Corporate: "bg-gray-100 text-gray-800",
       };
-      return <Badge className={badges[row.original.account_type] || "bg-gray-100"}>{row.original.account_type}</Badge>;
+      return (
+        <Badge className={badges[row.original.account_type] || "bg-gray-100"}>
+          {row.original.account_type}
+        </Badge>
+      );
     },
   },
   {
@@ -53,7 +80,11 @@ const columns: ColumnDef<AccountProps>[] = [
         Suspended: "text-orange-600 bg-orange-50",
         Closed: "text-red-600 bg-red-50",
       };
-      return <Badge className={colors[row.original.status] || "bg-gray-100"}>{row.original.status}</Badge>;
+      return (
+        <Badge className={colors[row.original.status] || "bg-gray-100"}>
+          {row.original.status}
+        </Badge>
+      );
     },
   },
   {
@@ -76,22 +107,7 @@ const columns: ColumnDef<AccountProps>[] = [
 ];
 
 const Accounts = () => {
-  const { data, loading, error } = useDataFetch<AccountProps[]>("accounts");
-
-  if (loading)
-    return (
-      <div className="w-full min-h-screen flex justify-center items-center">
-        <Spinner />
-      </div>
-    );
-
-  if (error)
-    return (
-      <div className="text-red-600 text-center">
-        Error: {error.message}
-      </div>
-    );
-
+  const [data] = useState<AccountProps[]>(FAKE_ACCOUNTS);
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -102,15 +118,26 @@ const Accounts = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <Link to="/members/onboard" className="bg-green-600 text-white px-5 py-2.5 rounded-lg hover:bg-green-700">
+          <Link
+            to="/members/onboard"
+            className="bg-green-600 text-white px-5 py-2.5 rounded-lg hover:bg-green-700"
+          >
             Digital Onboarding
           </Link>
-          <Link to="/accounts/edit" className="border px-5 py-2.5 rounded-lg hover:bg-gray-50">
+          <Link
+            to="/accounts/edit"
+            className="border px-5 py-2.5 rounded-lg hover:bg-gray-50"
+          >
             Create Account
           </Link>
         </div>
       </div>
 
+      <Breadcrumb
+        title="Accounts"
+        description="View and manage member accounts"
+        homePath="/"
+      />
       <DataTable
         title="All Accounts"
         data={data ? data.flat() : []}

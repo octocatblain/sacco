@@ -4,7 +4,7 @@ import { FC } from "react";
 export interface IconProps {
   color?: string;
   size?: number;
-  name: unknown;
+  name: keyof typeof icons | string;
   className?: string;
   onClick?: () => void;
 }
@@ -12,15 +12,25 @@ export interface IconProps {
 const LucideIcon: FC<IconProps> = ({
   name,
   color,
-  size,
+  size = 16,
   className,
   onClick,
 }) => {
-  const Icon = icons[name as keyof typeof icons];
+  const IconComp = icons[name as keyof typeof icons];
+  if (!IconComp) {
+    if (import.meta && import.meta.env && import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.warn(`LucideIcon: unknown icon name "${name}"`);
+    }
+    return <span className={className} onClick={onClick} />;
+  }
   return (
-    <i className={className} onClick={onClick}>
-      <Icon color={color} size={size} />
-    </i>
+    <IconComp
+      color={color}
+      size={size}
+      className={className}
+      onClick={onClick}
+    />
   );
 };
 

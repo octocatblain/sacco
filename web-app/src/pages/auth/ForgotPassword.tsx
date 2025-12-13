@@ -59,11 +59,11 @@ const ForgotPassword: FC = () => {
               <div className="w-25 h-20">
                 <img
                   src={Logo}
-                  alt="SLAMS logo"
+                  alt="SLMS logo"
                   className="w-full h-full object-contain"
                 />
               </div>
-              <h3 className="pt-2 text-xl font-semibold">SLAMS</h3>
+              <h3 className="pt-2 text-xl font-semibold">SLMS</h3>
               <p className="text-sm text-slate-600 dark:text-slate-300">
                 Savings and Loan Management System
               </p>

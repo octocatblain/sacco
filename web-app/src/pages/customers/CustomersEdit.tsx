@@ -5,12 +5,8 @@ import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
 import { CalendarIcon, UserPlus, Trash2, UploadCloud } from "lucide-react";
-import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-
-import { useFetchSingleObject } from "@/hooks/useFetchSingleObject";
 import { cn } from "@/lib/utils";
-import { apiBaseUrl } from "@/constants";
 // components
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -25,18 +21,20 @@ import {
 import {
   Select,
   SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectItem,
 } from "@/components/ui/select";
 import {
   Popover,
+  // components
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import Spinner from "@/components/Spinner";
+import Breadcrumb from "@/components/Breadcrumb";
 // types
 import { CustomerProps } from "@/types";
 import { toast } from "react-toastify";
@@ -114,108 +112,49 @@ const CustomersEdit = () => {
   const { customerId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const { data: customer } = useFetchSingleObject<CustomerProps>(
-    `customers/${customerId}`,
-    customerId ? true : false
-  );
-
-  const form = useForm<FormValues>({
+  // Fakedata for customer details
+  const FAKE_CUSTOMER: CustomerProps = {
+    id: customerId ? Number(customerId) : 1,
+    first_name: "John",
+    last_name: "Doe",
+    middle_name: "M.",
+    salutation: "Mr.",
+    email: "john@example.com",
+    phone_number: "0712345678",
+    id_number: "12345678",
+    tax_number: "A1234567",
+    country: "Kenya",
+    county: "Nairobi",
+    city: "Nairobi",
+    po_box: 1234,
+    date_of_birth: new Date("1990-01-01"),
+  };
+  const customer = FAKE_CUSTOMER;
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      salutation: "",
-      first_name: "",
-      middle_name: "",
-      last_name: "",
-      id_number: "",
-      phone_number: "",
-      email: "",
-      tax_number: "",
-      country: "",
-      county: "",
-      city: "",
-      po_box: 0,
-
-      // KYC defaults
-      kyc_level: "",
-      kyc_status: "",
-      kyc_expiry: new Date(),
-
-      // guarantors default: empty array
-      guarantors: [],
-
-      // files
-      id_document: undefined,
-      supporting_documents: [],
-    },
-    values: (customer as unknown as FormValues) || undefined,
+    defaultValues: customer,
   });
 
-  const { control, handleSubmit, register, watch } = form;
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "guarantors",
-  });
-
-  const watchSupportingDocs = watch("supporting_documents");
-
-  async function onSubmit(values: FormValues) {
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    // Just log and fake success
+    console.log(values);
     setLoading(true);
-    try {
-      const formData = new FormData();
-
-      // Append text fields
-      Object.entries(values).forEach(([key, value]) => {
-        if (key === "guarantors") {
-          formData.append(key, JSON.stringify(value));
-        } else if (key === "date_of_birth" || key === "kyc_expiry") {
-          formData.append(key, format(value as Date, "yyyy-MM-dd"));
-        } else if (key !== "id_document" && key !== "supporting_documents") {
-          formData.append(key, value as any);
-        }
-      });
-
-      // Append files
-      formData.append("id_document", values.id_document);
-      if (values.supporting_documents && values.supporting_documents.length > 0) {
-        values.supporting_documents.forEach((file) => {
-          formData.append("supporting_documents", file);
-        });
-      }
-
-      if (customerId) {
-        await axios.patch(`${apiBaseUrl}/customers/${customerId}/`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        toast.success("Customer information updated successfully");
-      } else {
-        await axios.post(`${apiBaseUrl}/customers/`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        toast.success("Customer created successfully");
-      }
-
+    setTimeout(() => {
       setLoading(false);
+      toast.success("Customer information updated (fakedata)");
       navigate("/customers");
-    } catch (error) {
-      setLoading(false);
-      toast.error("Hmmm! Something went wrong. Please check and try again");
-      console.error(error);
-    }
+    }, 1000);
   }
-
-  if (loading)
-    return (
-      <div className="w-full min-h-screen flex justify-center items-center">
-        <Spinner />
-      </div>
-    );
-
   return (
-    <div>
-      <h1 className="text-2xl font-medium">{customerId ? "Edit Customer" : "New Customer"}</h1>
+    <div className="container mx-auto py-10">
+      <Breadcrumb
+        title="Edit Customer"
+        description="Modify member information"
+        homePath="/"
+      />
+
       <Form {...form}>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          {/* customers details */}
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="bg-gray-200/50 my-5 p-5 rounded-md dark:bg-blue-900">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 pb-5">
               <FormField
@@ -370,7 +309,11 @@ const CustomersEdit = () => {
                               !field.value && "text-muted-foreground"
                             )}
                           >
-                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
@@ -380,7 +323,9 @@ const CustomersEdit = () => {
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
                           initialFocus
                         />
                       </PopoverContent>
@@ -543,7 +488,9 @@ const CustomersEdit = () => {
                               !field.value && "text-muted-foreground"
                             )}
                           >
-                            {field.value ? format(field.value, "PPP") : "Pick a date"}
+                            {field.value
+                              ? format(field.value, "PPP")
+                              : "Pick a date"}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
@@ -585,7 +532,9 @@ const CustomersEdit = () => {
                     />
                   </FormControl>
                   {fieldState.error && (
-                    <p className="text-red-500 text-sm mt-1">{fieldState.error.message}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {fieldState.error.message}
+                    </p>
                   )}
                   {field.value && (
                     <p className="text-sm mt-1">{(field.value as File).name}</p>
@@ -598,7 +547,8 @@ const CustomersEdit = () => {
           {/* Supporting Documents Upload */}
           <div className="bg-gray-200/50 my-5 p-5 rounded-md dark:bg-blue-900">
             <div className="w-full text-lg font-medium flex items-center gap-2">
-              <UploadCloud className="h-5 w-5" /> Upload Supporting Documents (PDF)
+              <UploadCloud className="h-5 w-5" /> Upload Supporting Documents
+              (PDF)
             </div>
             <Separator className="my-4 bg-slate-400" />
             <Controller
@@ -620,7 +570,9 @@ const CustomersEdit = () => {
                     />
                   </FormControl>
                   {fieldState.error && (
-                    <p className="text-red-500 text-sm mt-1">{fieldState.error.message}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {fieldState.error.message}
+                    </p>
                   )}
                   {watchSupportingDocs && watchSupportingDocs.length > 0 && (
                     <ul className="text-sm mt-1 list-disc list-inside">
@@ -641,7 +593,10 @@ const CustomersEdit = () => {
             </div>
             <Separator className="my-4 bg-slate-400" />
             {fields.map((fieldItem, index) => (
-              <div key={fieldItem.id} className="mb-5 border rounded p-3 relative">
+              <div
+                key={fieldItem.id}
+                className="mb-5 border rounded p-3 relative"
+              >
                 <Button
                   variant="destructive"
                   size="sm"
@@ -651,10 +606,22 @@ const CustomersEdit = () => {
                   <Trash2 className="h-4 w-4" />
                 </Button>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <Input placeholder="Name" {...register(`guarantors.${index}.name` as const)} />
-                  <Input placeholder="ID Number" {...register(`guarantors.${index}.id_number` as const)} />
-                  <Input placeholder="Phone" {...register(`guarantors.${index}.phone` as const)} />
-                  <Input placeholder="Email" {...register(`guarantors.${index}.email` as const)} />
+                  <Input
+                    placeholder="Name"
+                    {...register(`guarantors.${index}.name` as const)}
+                  />
+                  <Input
+                    placeholder="ID Number"
+                    {...register(`guarantors.${index}.id_number` as const)}
+                  />
+                  <Input
+                    placeholder="Phone"
+                    {...register(`guarantors.${index}.phone` as const)}
+                  />
+                  <Input
+                    placeholder="Email"
+                    {...register(`guarantors.${index}.email` as const)}
+                  />
                 </div>
               </div>
             ))}
@@ -671,6 +638,7 @@ const CustomersEdit = () => {
           <Button type="submit">Submit</Button>
         </form>
       </Form>
+      {loading && <Spinner />}
     </div>
   );
 };
