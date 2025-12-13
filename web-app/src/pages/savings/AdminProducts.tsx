@@ -2,6 +2,7 @@ import { FC, useMemo, useState } from "react";
 import { DataTable } from "@/components/data-table";
 import type { SavingsProduct } from "@/types";
 import { Button } from "@/components/ui/button";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const initialProducts: SavingsProduct[] = [
   {
@@ -100,6 +101,12 @@ const AdminProducts: FC = () => {
 
   return (
     <div className="space-y-3">
+      <Breadcrumb
+        title="Savings Products"
+        description="Manage your savings products catalog"
+        homePath="/dashboard"
+      />
+
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">Savings Products</h1>
         <Button size="sm" onClick={addProduct}>

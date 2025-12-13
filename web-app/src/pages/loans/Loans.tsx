@@ -32,21 +32,30 @@ type LoanProps = BaseLoanProps & {
 };
 import Breadcrumb from "@/components/Breadcrumb";
 
-const columns: ColumnDef<LoanProps>[] = [
+// Dialog state for each action
+import DisburseDialog from "@/components/loans/DisburseDialog";
+import RepaymentDialog from "@/components/loans/RepaymentDialog";
+import RescheduleDialog from "@/components/loans/RescheduleDialog";
+import TopUpDialog from "@/components/loans/TopUpDialog";
+import GuarantorDialog from "@/components/loans/GuarantorDialog";
+
+const columns = (
+  setDialogLoan: (v: LoanProps | null) => void,
+  setOpenDialog: (v: null | string) => void,
+  setConfirmDialog: (v: null | string) => void
+): ColumnDef<LoanProps>[] => [
   {
     header: "Customer ID",
-    cell: ({ row }) => {
-      return (
-        <div>
-          <Button
-            variant="link"
-            onClick={() => row.original.onView?.(row.original)}
-          >
-            {row.original.account}
-          </Button>
-        </div>
-      );
-    },
+    cell: ({ row }) => (
+      <div>
+        <Button
+          variant="link"
+          onClick={() => row.original.onView?.(row.original)}
+        >
+          {row.original.account}
+        </Button>
+      </div>
+    ),
   },
   {
     header: "Loan Type",
@@ -73,78 +82,79 @@ const columns: ColumnDef<LoanProps>[] = [
   {
     header: "Actions",
     cell: ({ row }: any) => {
+      const loan = row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild={true}>
-            <Button variant="ghost" size="icon" className="p-0">
-              <LucideIcon name="MoreVertical" size={22} />
+            <Button variant="outline" size="icon" className="p-0 rounded-full">
+              <LucideIcon name="Pen" size={17} />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => row.original.onView?.(row.original)}
-            >
+            <DropdownMenuItem onClick={() => loan.onView?.(loan)}>
               <LucideIcon name="Eye" size={16} className="mr-2" /> View Details
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => row.original.onEdit?.(row.original)}
-            >
+            <DropdownMenuItem onClick={() => loan.onEdit?.(loan)}>
               <LucideIcon name="Pen" size={16} className="mr-2" /> Edit Loan
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={
-                () => alert("Disburse Loan") /* replace with real handler */
-              }
+              onClick={() => {
+                setDialogLoan(loan);
+                setOpenDialog("disburse");
+              }}
             >
               <LucideIcon name="Send" size={16} className="mr-2" /> Disburse
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={
-                () => alert("Record Repayment") /* replace with real handler */
-              }
+              onClick={() => {
+                setDialogLoan(loan);
+                setOpenDialog("repayment");
+              }}
             >
               <LucideIcon name="DollarSign" size={16} className="mr-2" /> Record
               Repayment
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={
-                () => alert("Reschedule Loan") /* replace with real handler */
-              }
+              onClick={() => {
+                setDialogLoan(loan);
+                setOpenDialog("reschedule");
+              }}
             >
               <LucideIcon name="RefreshCw" size={16} className="mr-2" />{" "}
               Reschedule
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={
-                () => alert("Top Up Loan") /* replace with real handler */
-              }
+              onClick={() => {
+                setDialogLoan(loan);
+                setOpenDialog("topup");
+              }}
             >
               <LucideIcon name="ArrowUpCircle" size={16} className="mr-2" /> Top
               Up
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={
-                () => alert("Assign Guarantor") /* replace with real handler */
-              }
+              onClick={() => {
+                setDialogLoan(loan);
+                setOpenDialog("guarantor");
+              }}
             >
               <LucideIcon name="UserPlus" size={16} className="mr-2" /> Assign
               Guarantor
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={
-                () =>
-                  alert(
-                    "View Repayment Schedule"
-                  ) /* replace with real handler */
-              }
+              onClick={() => {
+                setDialogLoan(loan);
+                setConfirmDialog("repaymentSchedule");
+              }}
             >
               <LucideIcon name="Calendar" size={16} className="mr-2" />{" "}
               Repayment Schedule
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={
-                () => alert("Close Loan") /* replace with real handler */
-              }
+              onClick={() => {
+                setDialogLoan(loan);
+                setConfirmDialog("closeLoan");
+              }}
             >
               <LucideIcon name="CheckCircle" size={16} className="mr-2" /> Close
               Loan
@@ -250,6 +260,9 @@ const Loans = () => {
     loan: LoanProps | null;
   }>({ open: false, loan: null });
   const [data, setData] = useState<LoanProps[]>(FAKE_LOANS);
+  const [openDialog, setOpenDialog] = useState<null | string>(null);
+  const [dialogLoan, setDialogLoan] = useState<LoanProps | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<null | string>(null);
 
   // Handlers for modals
   const handleView = useCallback((loan: LoanProps) => {
@@ -267,6 +280,7 @@ const Loans = () => {
     onView: handleView,
     onEdit: handleEdit,
   }));
+  const cols = columns(setDialogLoan, setOpenDialog, setConfirmDialog);
   const totals = {
     count: loansArray.length,
     totalAmount: loansArray.reduce(
@@ -286,6 +300,7 @@ const Loans = () => {
         description="Manage loan applications and statuses"
         homePath="/loans"
       />
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="rounded-lg border bg-white dark:bg-blue-900 p-3">
           <div className="text-xs text-slate-500">Total loans</div>
@@ -304,14 +319,92 @@ const Loans = () => {
           </div>
         </div>
       </div>
+
       <DataTable
         title="Loans"
         btnTitle="Apply Loan"
         route="/loans/edit"
-        columns={columns}
+        columns={cols}
         data={loansArray}
         filters="loan_type"
       />
+
+      {/* Confirmation Dialogs */}
+      {confirmDialog === "repaymentSchedule" && dialogLoan && (
+        <Dialog
+          open={true}
+          onOpenChange={() => {
+            setConfirmDialog(null);
+            setDialogLoan(null);
+          }}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>View Repayment Schedule</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to view the repayment schedule for loan{" "}
+                {dialogLoan.loan_id}?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                onClick={() => {
+                  setConfirmDialog(null);
+                  setDialogLoan(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="default"
+                onClick={() => {
+                  setConfirmDialog(null);
+                  setDialogLoan(null); /* Add real handler here */
+                }}
+              >
+                View
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+      {confirmDialog === "closeLoan" && dialogLoan && (
+        <Dialog
+          open={true}
+          onOpenChange={() => {
+            setConfirmDialog(null);
+            setDialogLoan(null);
+          }}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Close Loan</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to close loan {dialogLoan.loan_id}?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                onClick={() => {
+                  setConfirmDialog(null);
+                  setDialogLoan(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  setConfirmDialog(null);
+                  setDialogLoan(null); /* Add real handler here */
+                }}
+              >
+                Close Loan
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* View Modal */}
       <Dialog open={viewModal.open} onOpenChange={closeView}>

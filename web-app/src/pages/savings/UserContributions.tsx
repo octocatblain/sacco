@@ -8,6 +8,7 @@ import type {
 } from "@/types";
 // import { calcSchedule } from "@/lib/loanMath"; // removed unused import
 import { Button } from "@/components/ui/button";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const mockProducts: SavingsProduct[] = [
   {
@@ -107,6 +108,11 @@ const UserContributions: FC = () => {
 
   return (
     <div className="space-y-3">
+      <Breadcrumb
+        title="My Savings Contributions"
+        description="Manage your savings products catalog"
+        homePath="/dashboard"
+      />
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">My Savings Contributions</h1>
         <Button size="sm" onClick={addContribution}>

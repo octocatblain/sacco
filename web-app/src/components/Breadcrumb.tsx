@@ -32,6 +32,7 @@ export default function Breadcrumb({
   );
 
   useEffect(() => {
+    document.title = title ? `${title} | K2AN SLMS` : "K2AN SLMS";
     const next: Crumb[] = segments.map((part, index) => {
       const href = "/" + segments.slice(0, index + 1).join("/");
       return { href, label: formatLabel(part) };
