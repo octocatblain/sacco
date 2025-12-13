@@ -51,14 +51,13 @@ const AccountsEdit = () => {
   const { accountNo } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   // Fakedata for account details
   let accountNumberValue = 1001;
   if (accountNo && /^[0-9]+$/.test(accountNo)) {
     accountNumberValue = Number(accountNo);
   }
-  const FAKE_ACCOUNT: AccountProps = {
+  const FAKE_ACCOUNT: any = {
     account_number: accountNumberValue,
     customer: 1,
     account_type: "Savings",
@@ -73,6 +72,11 @@ const AccountsEdit = () => {
       customer: FAKE_ACCOUNT.customer,
       account_type: FAKE_ACCOUNT.account_type,
       status: FAKE_ACCOUNT.status,
+      balance: FAKE_ACCOUNT.balance,
+      interest_rate: 0,
+      maturity_date: "",
+      kyc_completed: false,
+      id_document: "",
     },
   });
 
@@ -81,6 +85,7 @@ const AccountsEdit = () => {
     console.log("Fakedata submit:", values);
     setLoading(true);
     setTimeout(() => {
+      setLoading(false);
       navigate("/accounts");
     }, 1000);
   };
@@ -93,7 +98,9 @@ const AccountsEdit = () => {
         </div>
       ) : (
         <div>
-          <h1 className="text-2xl font-medium">New Account</h1>
+          <h1 className="text-2xl font-medium">
+            {accountNo ? `Edit Account #${accountNo}` : "New Account"}
+          </h1>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="bg-gray-200/50 my-5 p-5 rounded-md dark:bg-blue-900">
@@ -155,7 +162,7 @@ const AccountsEdit = () => {
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select an account type" />
+                                <SelectValue placeholder="Select an account status" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>

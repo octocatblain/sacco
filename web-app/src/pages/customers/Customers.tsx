@@ -23,7 +23,6 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import Spinner from "@/components/Spinner";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 
@@ -49,7 +48,8 @@ const columns: ColumnDef<
   {
     accessorKey: "first_name",
     header: "Name",
-    cell: ({ row }) => `${row.original.salutation} ${row.original.first_name} ${row.original.last_name}`,
+    cell: ({ row }) =>
+      `${row.original.salutation} ${row.original.first_name} ${row.original.last_name}`,
   },
   {
     accessorKey: "last_name",
@@ -58,14 +58,23 @@ const columns: ColumnDef<
   {
     accessorKey: "kyc_status",
     header: "KYC",
-    cell: ({ row }) => <Badge variant={row.original.kyc_status === "Verified" ? "default" : "secondary"}>
-      {row.original.kyc_status || "Pending"}
-    </Badge>,
+    cell: ({ row }) => (
+      <Badge
+        variant={
+          row.original.kyc_status === "Verified" ? "default" : "secondary"
+        }
+      >
+        {row.original.kyc_status || "Pending"}
+      </Badge>
+    ),
   },
   {
     accessorKey: "created_at",
     header: "Joined",
-    cell: ({ row }) => row.original.created_at ? format(new Date(row.original.created_at), "dd MMM yyyy") : "N/A",
+    cell: ({ row }) =>
+      row.original.created_at
+        ? format(new Date(row.original.created_at), "dd MMM yyyy")
+        : "N/A",
   },
   {
     header: "Actions",
@@ -105,7 +114,7 @@ const columns: ColumnDef<
 ];
 
 // Expanded fake data with more customers and random profile pictures
-const FAKE_CUSTOMERS: (CustomerProps & { profile_pic: string })[] = [
+const FAKE_CUSTOMERS: (any & { profile_pic: string })[] = [
   {
     id: 1,
     first_name: "Sipho",
@@ -489,7 +498,7 @@ const Customers = () => {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };
 
