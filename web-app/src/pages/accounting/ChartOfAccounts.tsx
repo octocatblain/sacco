@@ -86,7 +86,11 @@ export default function ChartOfAccounts() {
         cell: ({ row }: any) => (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="outline" className="rounded-full p-0">
+              <Button
+                size="icon"
+                variant="outline"
+                className="rounded-full p-0"
+              >
                 <LucideIcon name="Pen" className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>

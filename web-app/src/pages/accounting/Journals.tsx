@@ -177,7 +177,11 @@ export default function Journals() {
         cell: ({ row }: any) => (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="outline" className="rounded-full p-0">
+              <Button
+                size="icon"
+                variant="outline"
+                className="rounded-full p-0"
+              >
                 <LucideIcon name="Pen" className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -209,12 +213,12 @@ export default function Journals() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumb
-        title="Journals"
-        description="Record and review journal entries"
-        homePath="/"
-      />
       <div className="flex items-center justify-between">
+        <Breadcrumb
+          title="Journals"
+          description="Record and review journal entries"
+          homePath="/"
+        />
         <Button
           size="sm"
           disabled={!hasAccounts}
