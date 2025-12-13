@@ -1,3 +1,5 @@
+"use client";
+
 import { FC, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";

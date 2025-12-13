@@ -1,3 +1,5 @@
+"use client";
+
 import { FC, useEffect, useMemo, useState, useCallback } from "react";
 import type { KycApplication } from "@/types";
 import Breadcrumb from "@/components/Breadcrumb";

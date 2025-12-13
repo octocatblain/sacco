@@ -1,3 +1,5 @@
+"use client";
+
 import { DataTable } from "@/components/data-table";
 import Breadcrumb from "@/components/Breadcrumb";
 import type { TrialBalanceRow } from "@/types";

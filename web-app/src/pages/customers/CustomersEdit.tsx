@@ -1,3 +1,5 @@
+"use client";
+
 // src/pages/customers/CustomersEdit.tsx
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -113,7 +115,7 @@ const CustomersEdit = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   // Fakedata for customer details
-  const FAKE_CUSTOMER: CustomerProps = {
+  const FAKE_CUSTOMER: any = {
     id: customerId ? Number(customerId) : 1,
     first_name: "John",
     last_name: "Doe",
@@ -128,11 +130,19 @@ const CustomersEdit = () => {
     city: "Nairobi",
     po_box: 1234,
     date_of_birth: new Date("1990-01-01"),
+    // Add default for nested array
+    guarantors: [{ name: "", id_number: "", phone: "", email: "" }],
   };
   const customer = FAKE_CUSTOMER;
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: customer,
+  });
+
+  // Add useFieldArray for dynamic fields
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "guarantors",
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -519,7 +529,7 @@ const CustomersEdit = () => {
             </div>
             <Separator className="my-4 bg-slate-400" />
             <Controller
-              control={control}
+              control={form.control}
               name="id_document"
               render={({ field, fieldState }) => (
                 <FormItem>
@@ -552,37 +562,41 @@ const CustomersEdit = () => {
             </div>
             <Separator className="my-4 bg-slate-400" />
             <Controller
-              control={control}
+              control={form.control}
               name="supporting_documents"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel>Supporting Documents</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="file"
-                      multiple
-                      accept=".pdf"
-                      onChange={(e) =>
-                        field.onChange(
-                          e.target.files ? Array.from(e.target.files) : []
-                        )
-                      }
-                    />
-                  </FormControl>
-                  {fieldState.error && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {fieldState.error.message}
-                    </p>
-                  )}
-                  {watchSupportingDocs && watchSupportingDocs.length > 0 && (
-                    <ul className="text-sm mt-1 list-disc list-inside">
-                      {watchSupportingDocs.map((file: File, idx: number) => (
-                        <li key={idx}>{file.name}</li>
-                      ))}
-                    </ul>
-                  )}
-                </FormItem>
-              )}
+              render={({ field, fieldState }) => {
+                // Watch the value of supporting_documents for file list display
+                const files = field.value as File[] | undefined;
+                return (
+                  <FormItem>
+                    <FormLabel>Supporting Documents</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="file"
+                        multiple
+                        accept=".pdf"
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.files ? Array.from(e.target.files) : []
+                          )
+                        }
+                      />
+                    </FormControl>
+                    {fieldState.error && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                    {files && files.length > 0 && (
+                      <ul className="text-sm mt-1 list-disc list-inside">
+                        {files.map((file: File, idx: number) => (
+                          <li key={idx}>{file.name}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </FormItem>
+                );
+              }}
             />
           </div>
 
@@ -606,27 +620,64 @@ const CustomersEdit = () => {
                   <Trash2 className="h-4 w-4" />
                 </Button>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <Input
-                    placeholder="Name"
-                    {...register(`guarantors.${index}.name` as const)}
+                  <FormField
+                    control={form.control}
+                    name={`guarantors.${index}.name`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                  <Input
-                    placeholder="ID Number"
-                    {...register(`guarantors.${index}.id_number` as const)}
+                  <FormField
+                    control={form.control}
+                    name={`guarantors.${index}.id_number`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>ID Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="ID Number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                  <Input
-                    placeholder="Phone"
-                    {...register(`guarantors.${index}.phone` as const)}
+                  <FormField
+                    control={form.control}
+                    name={`guarantors.${index}.phone`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Phone" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                  <Input
-                    placeholder="Email"
-                    {...register(`guarantors.${index}.email` as const)}
+                  <FormField
+                    control={form.control}
+                    name={`guarantors.${index}.email`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
               </div>
             ))}
             <Button
               variant="outline"
+              type="button"
               onClick={() =>
                 append({ name: "", id_number: "", phone: "", email: "" })
               }

@@ -1,88 +1,32 @@
-import { useState, useEffect } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { apiBaseUrl } from "@/constants";
-import { useFetchSingleObject } from "@/hooks/useFetchSingleObject";
-import { AccountProps } from "@/types";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
-import Spinner from "@/components/Spinner";
+"use client";
 
-const formSchema = z.object({
-  // customer: z.string(coerce.number()),
-  customer: z.coerce.number().min(1, {
-    message: "Required",
-  }),
-  account_type: z.string().refine((value) => value !== "", {
-    message: "Required",
-  }),
-  // status: z.string().refine((value) => value !== "", {
-  //   message: "Required",
-  // }),
-  status: z.string().optional(),
-  balance: z.coerce.number().min(0, "Balance cannot be negative").optional(),
-  interest_rate: z.coerce.number().min(0).optional(),
-  maturity_date: z.string().optional(),
-  kyc_completed: z.boolean().default(false),
-  id_document: z.string().optional(),
-});
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import AccountForm from "./AccountForm";
+
+const FAKE_ACCOUNT: any = {
+  account_number: 1001,
+  customer: 1,
+  account_type: "Savings",
+  balance: 5000,
+  status: "Active",
+  interest_rate: 2.5,
+  maturity_date: "2025-01-01",
+  kyc_completed: true,
+  id_document: "National ID",
+};
 
 const AccountsEdit = () => {
   const { accountNo } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // Fakedata for account details
-  let accountNumberValue = 1001;
-  if (accountNo && /^[0-9]+$/.test(accountNo)) {
-    accountNumberValue = Number(accountNo);
-  }
-  const FAKE_ACCOUNT: any = {
-    account_number: accountNumberValue,
-    customer: 1,
-    account_type: "Savings",
-    balance: 5000,
-    status: "Active",
-    date_opened: new Date("2023-01-01"),
-  };
+  // Use fake data for demo
+  const defaultValues = accountNo
+    ? { ...FAKE_ACCOUNT, account_number: accountNo }
+    : {};
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      customer: FAKE_ACCOUNT.customer,
-      account_type: FAKE_ACCOUNT.account_type,
-      status: FAKE_ACCOUNT.status,
-      balance: FAKE_ACCOUNT.balance,
-      interest_rate: 0,
-      maturity_date: "",
-      kyc_completed: false,
-      id_document: "",
-    },
-  });
-
-  // handle form submit
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log("Fakedata submit:", values);
+  const handleSubmit = (values: any) => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -92,99 +36,15 @@ const AccountsEdit = () => {
 
   return (
     <div>
+      <h1 className="text-2xl font-medium mb-4">
+        {accountNo ? `Edit Account #${accountNo}` : "New Account"}
+      </h1>
       {loading ? (
         <div className="w-full min-h-screen flex justify-center items-center">
-          <Spinner />
+          Saving...
         </div>
       ) : (
-        <div>
-          <h1 className="text-2xl font-medium">
-            {accountNo ? `Edit Account #${accountNo}` : "New Account"}
-          </h1>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <div className="bg-gray-200/50 my-5 p-5 rounded-md dark:bg-blue-900">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 pb-5">
-                  <FormField
-                    control={form.control}
-                    name="customer"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Customer ID.</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder=""
-                            {...field}
-                            className="!focus-visible:ring-0 !focus-visible:ring-offset-0"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="account_type"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Account Type</FormLabel>
-                        <Select
-                          value={field.value}
-                          onValueChange={(v) => v != "" && field.onChange(v)}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select an account type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Savings">Savings</SelectItem>
-                            <SelectItem value="Current">Current</SelectItem>
-                            <SelectItem value="Fixed">Fixed</SelectItem>
-                            <SelectItem value="Joint">Joint</SelectItem>
-                            <SelectItem value="Corporate">Corporate</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {accountNo && (
-                    <FormField
-                      control={form.control}
-                      name="status"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Account Status</FormLabel>
-                          <Select
-                            value={field.value}
-                            onValueChange={(v) => v != "" && field.onChange(v)}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select an account status" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="Active">Active</SelectItem>
-                              <SelectItem value="Closed">Closed</SelectItem>
-                              <SelectItem value="Dormant">Dormant</SelectItem>
-                              <SelectItem value="Suspended">
-                                Suspended
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
-                </div>
-              </div>
-              <Button type="submit">Submit</Button>
-            </form>
-          </Form>
-        </div>
+        <AccountForm onSubmit={handleSubmit} defaultValues={defaultValues} />
       )}
     </div>
   );

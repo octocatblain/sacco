@@ -2,29 +2,36 @@ import { FC, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { calcSchedule } from "@/lib/loanMath";
 
-interface Props {
+// Remove the old Props interface and use only one
+interface RescheduleDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   loan?: any;
-  onReschedule?: (annualRate: number, termMonths: number) => void;
+  onReschedule: (annualRate: number, termMonths: number) => void;
+  initialRate: number;
+  initialTermMonths: number;
 }
 
-const RescheduleDialog: FC<Props> = ({
+const RescheduleDialog: FC<RescheduleDialogProps> = ({
   open,
   onOpenChange,
   loan,
   onReschedule,
+  initialRate,
+  initialTermMonths,
 }) => {
-  const [rate, setRate] = useState(loan?.rate || 0.1);
-  const [term, setTerm] = useState(loan?.termMonths || 12);
+  // Use initialRate and initialTermMonths for initial state
+  const [rate, setRate] = useState(initialRate ?? loan?.rate ?? 0.1);
+  const [term, setTerm] = useState(initialTermMonths ?? loan?.termMonths ?? 12);
   const ratePct = rate * 100;
   const validRate = ratePct >= 0 && ratePct <= 50;
   const validTerm = term >= 1 && term <= 120;
 
   useEffect(() => {
-    setRate(loan?.rate || 0.1);
-    setTerm(loan?.termMonths || 12);
-  }, [loan]);
+    setRate(initialRate ?? loan?.rate ?? 0.1);
+    setTerm(initialTermMonths ?? loan?.termMonths ?? 12);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialRate, initialTermMonths, loan]);
 
   const submit = () => {
     if (validRate && validTerm && onReschedule) {

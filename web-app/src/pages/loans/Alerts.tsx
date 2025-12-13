@@ -1,3 +1,5 @@
+"use client";
+
 import { FC, useMemo } from "react";
 import { DataTable } from "@/components/data-table";
 import Breadcrumb from "@/components/Breadcrumb";

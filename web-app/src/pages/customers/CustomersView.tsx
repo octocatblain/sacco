@@ -1,3 +1,5 @@
+"use client";
+
 import { useParams } from "react-router-dom";
 // import { useFetchSingleObject } from "@/hooks/useFetchSingleObject";
 // types
@@ -24,7 +26,7 @@ import Breadcrumb from "@/components/Breadcrumb";
 const CustomersView = () => {
   const { customerId } = useParams();
   // Fakedata for customer details
-  const customer: CustomerProps = {
+  const customer: any = {
     id: customerId ? Number(customerId) : 1,
     first_name: "John",
     last_name: "Doe",
@@ -40,7 +42,7 @@ const CustomersView = () => {
     po_box: 1234,
     date_of_birth: new Date("1990-01-01"),
   };
-  const customerAccounts: AccountProps[] = [
+  const customerAccounts: any[] = [
     {
       account_number: 1001,
       customer: customer.id,
@@ -50,7 +52,7 @@ const CustomersView = () => {
       date_opened: new Date("2023-01-01"),
     },
   ];
-  const customerTransactions: TransactionProps[] = [
+  const customerTransactions: any[] = [
     {
       transaction_id: "T-001",
       account: 1001,

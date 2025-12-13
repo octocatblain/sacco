@@ -45,6 +45,7 @@ import ChartOfAccounts from "./pages/accounting/ChartOfAccounts.tsx";
 import Journals from "./pages/accounting/Journals.tsx";
 import TrialBalance from "./pages/accounting/TrialBalance.tsx";
 import UserSettingsPage from "./pages/settings/UserSettingsPage.tsx";
+import MemberOnboarding from "./pages/members/MemberOnboarding.tsx";
 
 const router = createBrowserRouter([
   {
@@ -71,6 +72,14 @@ const router = createBrowserRouter([
       {
         path: "/accounts",
         element: <Accounts />,
+      },
+      {
+        path: "/accounts/edit",
+        element: <AccountsEdit />,
+      },
+      {
+        path: "/members/onboard",
+        element: <MemberOnboarding />,
       },
       {
         path: "/accounts/edit/:accountNo?",

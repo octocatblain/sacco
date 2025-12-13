@@ -1,3 +1,5 @@
+"use client";
+
 import { FC, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -296,14 +298,16 @@ const LoansView: FC = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <DisburseDialog onDisburse={disburse} />
-          <TopUpDialog onTopUp={topUp} />
+          <DisburseDialog open onOpenChange={() => {}} onDisburse={disburse} />
+          <TopUpDialog open onOpenChange={() => {}} onTopUp={topUp} />
           <RescheduleDialog
+            open={true}
+            onOpenChange={() => {}}
             initialRate={annualRate}
             initialTermMonths={termMonths}
             onReschedule={reschedule}
           />
-          <RepaymentDialog onRepay={addRepayment} />
+          <RepaymentDialog open onOpenChange={() => {}} onRepay={addRepayment} />
         </div>
       </div>
 
@@ -344,7 +348,7 @@ const LoansView: FC = () => {
       {/* Schedule */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Amortization Schedule</h2>
-        <GuarantorDialog onAdd={addGuarantor} />
+        <GuarantorDialog open={false} onOpenChange={() => {}} onAdd={addGuarantor} />
       </div>
       <div className="mb-2 rounded-md border bg-white dark:bg-blue-900 p-2 text-xs">
         <div className="flex gap-4">
