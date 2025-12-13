@@ -47,6 +47,11 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
   const table = useReactTable({
     data,
     columns,
@@ -58,7 +63,9 @@ export function DataTable<TData, TValue>({
     state: {
       columnFilters,
       globalFilter,
+      pagination,
     },
+    onPaginationChange: setPagination,
   });
 
   const getExportData = () => {
@@ -316,7 +323,7 @@ export function DataTable<TData, TValue>({
         <div className="flex items-center gap-2">
           <button
             className="px-3 py-2 rounded-md border bg-white hover:bg-slate-50 disabled:opacity-50"
-            onClick={() => table.firstPage()}
+            onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
             {"<<"}
@@ -337,7 +344,7 @@ export function DataTable<TData, TValue>({
           </button>
           <button
             className="px-3 py-2 rounded-md border bg-white hover:bg-slate-50 disabled:opacity-50"
-            onClick={() => table.lastPage()}
+            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
             {">>"}
@@ -357,7 +364,7 @@ export function DataTable<TData, TValue>({
               type="number"
               min="1"
               max={table.getPageCount()}
-              defaultValue={table.getState().pagination.pageIndex + 1}
+              value={table.getState().pagination.pageIndex + 1}
               onChange={(e) => {
                 const page = e.target.value ? Number(e.target.value) - 1 : 0;
                 table.setPageIndex(page);

@@ -30,9 +30,27 @@ const LoansView: FC = () => {
       method: "cash",
       notes: "Initial payment",
     },
+    {
+      id: "r2",
+      loanId: loanId || "L-1",
+      amount: 8000,
+      date: new Date(Date.now() - 86400000).toISOString(),
+      method: "bank",
+      notes: "Second payment",
+    },
+    {
+      id: "r3",
+      loanId: loanId || "L-1",
+      amount: 12000,
+      date: new Date(Date.now() - 2 * 86400000).toISOString(),
+      method: "mobile",
+      notes: "Third payment",
+    },
   ]);
   const [guarantors, setGuarantors] = useState<Guarantor[]>([
     { id: "g1", name: "Jane Doe", liability: 20000 },
+    { id: "g2", name: "John Smith", liability: 15000 },
+    { id: "g3", name: "Alice Brown", liability: 10000 },
   ]);
 
   const arrears = useMemo(

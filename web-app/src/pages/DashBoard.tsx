@@ -31,23 +31,59 @@ import { LoanProps, TransactionProps } from "@/types";
 import Breadcrumb from "@/components/Breadcrumb";
 
 const DashBoard = () => {
-  const { totalCustomers, totalAccountBalance, totalLoans, totalWithdrawals } =
-    useDashboardData();
-  const { data: transactions } =
-    useDataFetch<TransactionProps[]>("transactions");
-  const { data: loans } = useDataFetch<LoanProps[]>("loans");
+  // --- FAKE DATA FOR DEMO PURPOSES ---
+  const totalCustomers = 1234;
+  const totalAccountBalance = 567890.12;
+  const totalLoans = 43210.55;
+  const totalWithdrawals = 12345.67;
 
-  // Normalize to arrays in case API returns single object or null
-  const transactionsArray = Array.isArray(transactions)
-    ? transactions
-    : transactions
-    ? ([transactions] as TransactionProps[])
-    : [];
-  const loansArray = Array.isArray(loans)
-    ? loans
-    : loans
-    ? ([loans] as LoanProps[])
-    : [];
+  const transactionsArray = [
+    {
+      transaction_id: 1,
+      account: "ACC1001",
+      transaction_type: "Deposit",
+      amount: 500.0,
+      transaction_date: new Date().toISOString(),
+    },
+    {
+      transaction_id: 2,
+      account: "ACC1002",
+      transaction_type: "Withdrawal",
+      amount: 200.0,
+      transaction_date: new Date(Date.now() - 86400000).toISOString(),
+    },
+    {
+      transaction_id: 3,
+      account: "ACC1003",
+      transaction_type: "Deposit",
+      amount: 1000.0,
+      transaction_date: new Date(Date.now() - 2 * 86400000).toISOString(),
+    },
+    // ...add more fake transactions as needed
+  ];
+
+  const loansArray = [
+    {
+      loan_id: 1,
+      account: "ACC1001",
+      loan_status: "Active",
+      amount: 2500.0,
+    },
+    {
+      loan_id: 2,
+      account: "ACC1002",
+      loan_status: "Pending",
+      amount: 1500.0,
+    },
+    {
+      loan_id: 3,
+      account: "ACC1003",
+      loan_status: "Closed",
+      amount: 3000.0,
+    },
+    // ...add more fake loans as needed
+  ];
+  // --- END FAKE DATA ---
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 md:gap-8 md:p-8">
       <Breadcrumb homePath="/" />
@@ -59,7 +95,9 @@ const DashBoard = () => {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalCustomers}</div>
+            <div className="text-2xl font-bold">
+              {totalCustomers.toLocaleString()}
+            </div>
             <p className="text-xs text-muted-foreground">
               +180.1% from last month
             </p>
@@ -73,7 +111,9 @@ const DashBoard = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalAccountBalance}</div>
+            <div className="text-2xl font-bold">
+              ${totalAccountBalance.toLocaleString()}
+            </div>
             <p className="text-xs text-muted-foreground">
               +20.1% from last month
             </p>
@@ -87,7 +127,9 @@ const DashBoard = () => {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalWithdrawals}</div>
+            <div className="text-2xl font-bold">
+              ${totalWithdrawals.toLocaleString()}
+            </div>
             <p className="text-xs text-muted-foreground">
               +19% from last month
             </p>
@@ -99,7 +141,9 @@ const DashBoard = () => {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$ {totalLoans}</div>
+            <div className="text-2xl font-bold">
+              $ {totalLoans.toLocaleString()}
+            </div>
             <p className="text-xs text-muted-foreground">
               +201 since last hour
             </p>
