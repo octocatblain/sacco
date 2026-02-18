@@ -45,7 +45,7 @@ const SignIn: FC = () => {
       toast.success(successMessage, { autoClose: 2000 });
       
       // Redirect to dashboard
-      navigate("/");
+      navigate("/dashboard");
     } catch (error: any) {
       setLoading(false);
       const errorMessage = 

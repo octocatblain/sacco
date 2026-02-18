@@ -67,7 +67,7 @@ const SignUp: FC = () => {
 
             setLoading(false);
             toast.success("Account created successfully! Welcome aboard.", { autoClose: 2000 });
-            navigate("/");
+            navigate("/dashboard");
         } catch (error: any) {
             setLoading(false);
             const errorMessage = 
