@@ -12,8 +12,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import PasswordResetConfirmSerializer, UserSerializer, RegisterSerializer, PasswordResetSerializer, ProfileSerializer
+from .serializers import PasswordResetConfirmSerializer, UserSerializer, RegisterSerializer, PasswordResetSerializer, ProfileSerializer, CustomTokenObtainPairSerializer
 from .models import Profile
 
 
@@ -122,3 +123,10 @@ class ProfileView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    """
+    Custom view for obtaining JWT tokens.
+    """
+    serializer_class = CustomTokenObtainPairSerializer

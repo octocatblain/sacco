@@ -94,3 +94,14 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def get_role_display(self, obj):
         return obj.get_role_display()
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['message'] = 'Login successful'
+        data['user'] = {
+            'username': self.user.username,
+            'email': self.user.email,
+        }
+        return data
