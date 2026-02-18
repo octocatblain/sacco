@@ -9,7 +9,6 @@ from .views import (
     LogoutView,
     PasswordResetRequestView,
     PasswordResetConfirmView,
-    PasswordResetConfirmView,
     UserProfileView,
     CustomTokenObtainPairView,
 )

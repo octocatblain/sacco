@@ -47,15 +47,28 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
 
     def create(self, request, *args, **kwargs):
-        response = super().create(request, *args, **kwargs)
-        if response.status_code == 201:
-            serializer = TokenObtainPairSerializer(data={
-                'username': request.data['username'],
-                'password': request.data['password']
-            })
-            serializer.is_valid(raise_exception=True)
-            response.data['tokens'] = serializer.validated_data
-        return response
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        # Generate tokens for the new user
+        token_serializer = TokenObtainPairSerializer(data={
+            'username': request.data['username'],
+            'password': request.data['password']
+        })
+
+        if token_serializer.is_valid():
+            tokens = token_serializer.validated_data
+            return Response({
+                'tokens': tokens,
+                'user': {
+                    'username': user.username,
+                    'email': user.email,
+                },
+                'message': 'Account created successfully'
+            }, status=status.HTTP_201_CREATED)
+
+        return Response(token_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(APIView):
