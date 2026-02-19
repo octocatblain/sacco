@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { Outlet } from "react-router-dom";
-import { MessageSquare, ChevronLeft, ChevronRight }  from "lucide-react";
+import { MessageSquare, ChevronLeft, ChevronRight, Search }  from "lucide-react";
 
 // components
 import NavBar from "./components/layout/header/NavBar";
@@ -10,6 +10,7 @@ import SidebarLinks from "./components/layout/sidebar/SidebarLinks";
 const App: FC = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleMobileMenuToggle = () => {
     setShowMobileMenu(!showMobileMenu);
@@ -30,11 +31,22 @@ const App: FC = () => {
           } h-full z-20`}
         >
           {/* Sidebar Header / Collapse Button Area */}
-          <div className="flex items-center justify-end px-4 py-3 h-16 border-b border-gray-100 dark:border-slate-800">
-             
+          <div className="flex items-center justify-between px-4 py-3 h-16 border-b border-gray-100 dark:border-slate-800">
+             {!sidebarCollapsed && (
+               <div className="relative w-full mr-4">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  />
+               </div>
+             )}
             <button
               onClick={handleSidebarCollapse}
-              className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
+              className={`p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200 transition-colors ${sidebarCollapsed ? 'mx-auto' : ''}`}
               aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
                {sidebarCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
@@ -42,7 +54,7 @@ const App: FC = () => {
           </div>
           
           {/* Sidebar Content */}
-          <SidebarLinks collapsed={sidebarCollapsed} />
+          <SidebarLinks collapsed={sidebarCollapsed} searchQuery={searchQuery} />
           
           {/* Sidebar Footer (Optional) */}
           <div className="p-4 border-t border-gray-100 dark:border-slate-800">

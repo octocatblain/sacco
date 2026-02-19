@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { useNotifications } from "@/contexts/NotificationContext";
-import LucideIcon from "./LucideIcon";
+import LucideIcon from "../../LucideIcon";
 
 const NotificationBell: FC = () => {
   const { unreadCount } = useNotifications();
@@ -20,7 +20,7 @@ const NotificationBell: FC = () => {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-96 rounded-md bg-white text-black shadow-lg ring-1 ring-black/5 dark:bg-blue-900 dark:text-white z-50">
+        <div className="absolute right-0 mt-2 z-50 origin-top-right transform transition-all duration-200">
           <NotificationPanel onClose={() => setOpen(false)} />
         </div>
       )}

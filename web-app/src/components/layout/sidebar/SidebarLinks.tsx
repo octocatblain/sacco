@@ -5,6 +5,7 @@ import LucideIcon from "../../LucideIcon";
 interface SidebarLinksProps {
   onClick?: () => void;
   collapsed?: boolean;
+  searchQuery?: string;
 }
 
 type LeafItem = { label: string; icon: string; to: string };
@@ -70,7 +71,7 @@ const sidebarStructure: Array<LeafItem | GroupItem> = [
   { label: "Help & Support", icon: "HelpCircle", to: "/dashboard/help" },
 ];
 
-const SidebarLinks: FC<SidebarLinksProps> = ({ onClick, collapsed = false }) => {
+const SidebarLinks: FC<SidebarLinksProps> = ({ onClick, collapsed = false, searchQuery = "" }) => {
   const location = useLocation();
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
@@ -91,6 +92,22 @@ const SidebarLinks: FC<SidebarLinksProps> = ({ onClick, collapsed = false }) => 
     setOpenGroups((prev) => ({ ...prev, ...newOpenGroups }));
   }, [location.pathname]);
 
+    // Automatically expand all groups when filtering
+    useEffect(() => {
+        if (searchQuery) {
+            const allGroupsOpen: Record<string, boolean> = {};
+             sidebarStructure.forEach((item) => {
+                 const group = item as GroupItem;
+                 if(group.children) {
+                     allGroupsOpen[group.label] = true;
+                 }
+             });
+             setOpenGroups(allGroupsOpen);
+        } else {
+             // Reset or logic to restore previous state could go here, but keeping it simple
+        }
+    }, [searchQuery]);
+
 
   const toggleGroup = (label: string) => {
     setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
@@ -105,12 +122,57 @@ const SidebarLinks: FC<SidebarLinksProps> = ({ onClick, collapsed = false }) => 
      }
      ${collapsed ? "justify-center px-2" : "px-3"}`;
 
+   // Filtering Logic
+  const filteredItems = sidebarStructure.filter((item) => {
+        if (!searchQuery) return true;
+        const query = searchQuery.toLowerCase();
+
+        // Check current item label
+        if (item.label.toLowerCase().includes(query)) return true;
+
+        // Check children if group
+        const group = item as GroupItem;
+        if (group.children) {
+            const hasMatchingChild = group.children.some(child => 
+                child.label.toLowerCase().includes(query)
+            );
+            return hasMatchingChild;
+        }
+        return false;
+  }).map(item => {
+      // If search query is active and it's a group, we might want to filter the children shown?
+      // For now, let's just show the group with all children if the group matches or any child matches.
+      // Refined: If we want to ONLY show matching children:
+       if (!searchQuery) return item;
+       const query = searchQuery.toLowerCase();
+       const group = item as GroupItem;
+       
+       if (group.children) {
+            // If group matches, return all children (or should we still filter?)
+            // Usually if I search "Settings", I want to see "Profile", "User", "System".
+            if (group.label.toLowerCase().includes(query)) return item;
+
+            // If group doesn't match but child does, filter children
+            const matchingChildren = group.children.filter(child => 
+                child.label.toLowerCase().includes(query)
+            );
+            if (matchingChildren.length > 0) {
+                return { ...group, children: matchingChildren };
+            }
+       }
+       return item;
+  });
+
+
   return (
     <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1 custom-scrollbar">
-      {sidebarStructure.map((item) => {
+      {filteredItems.map((item) => {
         // Leaf Item
         if ((item as LeafItem).to) {
           const leaf = item as LeafItem;
+          // Safety check for LeafItems that might be returned from map
+           if (!leaf.to) return null; 
+
           return (
             <div key={leaf.label}>
                 <NavLink
@@ -129,6 +191,9 @@ const SidebarLinks: FC<SidebarLinksProps> = ({ onClick, collapsed = false }) => 
 
         // Group Item
         const group = item as GroupItem;
+        // Check if group is valid
+        if (!group.children) return null;
+
         const isOpen = !!openGroups[group.label];
         const hasActiveChild = group.children.some((child) =>
              location.pathname.startsWith(child.to)

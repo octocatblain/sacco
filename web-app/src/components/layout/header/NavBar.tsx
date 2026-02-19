@@ -1,7 +1,7 @@
 import { FC, useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Menu, Bell, Search, Sun, Moon, LogOut, Settings, User } from "lucide-react";
+import { Menu, Search, Sun, Moon, LogOut, Settings, User } from "lucide-react";
 
 import ProfilePlaceholder from "@/assets/profile-placeholder.png";
 import Logo from "@/assets/open-sacco.png";
@@ -10,7 +10,7 @@ import { ThemeContext } from "@/contexts/ThemeContext";
 import { useUserProfileInfo } from "@/hooks/useUserProfile";
 import { apiBaseUrl } from "@/constants";
 
-import NotificationBell from "../../NotificationBell";
+import NotificationBell from "./NotificationBell";
 
 interface NavBarProps {
   showMobileMenu: boolean;
