@@ -1,9 +1,11 @@
 import { FC, useState } from "react";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { Outlet } from "react-router-dom";
+import { MessageSquare, ChevronLeft, ChevronRight }  from "lucide-react";
+
 // components
-import NavBar from "./components/NavBar";
-import SidebarLinks from "./components/SidebarLinks";
+import NavBar from "./components/layout/header/NavBar";
+import SidebarLinks from "./components/layout/sidebar/SidebarLinks";
 
 const App: FC = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -19,70 +21,75 @@ const App: FC = () => {
 
   return (
     <NotificationProvider>
-      <NavBar
-        showMobileMenu={showMobileMenu}
-        handleMobileMenuToggle={handleMobileMenuToggle}
-      />
-      <div className="flex w-full max-w-screen-2xl mx-auto min-h-screen bg-white dark:bg-blue-950">
-        {/* Sidebar */}
+      <div className="flex h-screen bg-gray-50 dark:bg-slate-900 overflow-hidden">
+        
+         {/* Sidebar - Desktop */}
         <aside
-          className={`hidden lg:flex flex-col bg-gray-200 dark:bg-blue-900 dark:text-white transition-all duration-200 ${
-            sidebarCollapsed ? "w-16" : "w-64"
-          } min-h-screen sticky top-0 z-20`}
+          className={`hidden lg:flex flex-col bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 transition-all duration-300 ease-in-out ${
+            sidebarCollapsed ? "w-20" : "w-64"
+          } h-full z-20`}
         >
-          <div className="flex items-center justify-between px-2 py-3 border-b border-blue-800/20 dark:border-blue-800/40">
-            {!sidebarCollapsed && (
-              <span className="font-bold text-lg">Menu</span>
-            )}
+          {/* Sidebar Header / Collapse Button Area */}
+          <div className="flex items-center justify-end px-4 py-3 h-16 border-b border-gray-100 dark:border-slate-800">
+             
             <button
-              className="p-1 rounded hover:bg-blue-800/10 dark:hover:bg-blue-800/30 transition"
               onClick={handleSidebarCollapse}
-              aria-label={
-                sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
-              }
+              className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
+              aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
-              <svg
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                className={`transition-transform ${
-                  sidebarCollapsed ? "rotate-180" : ""
-                }`}
-              >
-                <path
-                  d="M19 12H5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M12 5l-7 7 7 7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+               {sidebarCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
             </button>
           </div>
-          <div className="flex-1 min-h-0 h-0">
-            <SidebarLinks collapsed={sidebarCollapsed} />
+          
+          {/* Sidebar Content */}
+          <SidebarLinks collapsed={sidebarCollapsed} />
+          
+          {/* Sidebar Footer (Optional) */}
+          <div className="p-4 border-t border-gray-100 dark:border-slate-800">
+             <div className={`flex items-center ${sidebarCollapsed ? "justify-center" : "gap-x-3"}`}>
+                 <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                    <MessageSquare size={16} />
+                 </div>
+                 {!sidebarCollapsed && (
+                     <div>
+                         <p className="text-xs font-semibold text-slate-900 dark:text-white">Need Help?</p>
+                         <p className="text-[10px] text-slate-500 dark:text-slate-400">Contact Support</p>
+                     </div>
+                 )}
+             </div>
           </div>
         </aside>
 
-        {/* mobile navbar */}
+        {/* Mobile Sidebar Overlay */}
         {showMobileMenu && (
-          <div className="absolute z-30 block bg-gray-200 dark:bg-blue-950 dark:text-white lg:hidden rounded-md">
-            <ul className="list-none p-0 m-5">
-              <SidebarLinks onClick={handleMobileMenuToggle} />
-            </ul>
+          <div className="fixed inset-0 z-40 lg:hidden">
+            <div 
+                className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" 
+                onClick={handleMobileMenuToggle}
+            />
+            <div className="absolute inset-y-0 left-0 w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 shadow-2xl transform transition-transform duration-300 ease-in-out h-full flex flex-col">
+                <div className="h-16 flex items-center px-6 border-b border-gray-100 dark:border-slate-800">
+                    <span className="text-lg font-bold text-slate-900 dark:text-white">Menu</span>
+                </div>
+                <SidebarLinks onClick={handleMobileMenuToggle} />
+            </div>
           </div>
         )}
 
-        {/* Main content */}
-        <main className="flex-1 flex flex-col min-h-screen bg-white dark:bg-blue-950 dark:text-slate-300 py-4 px-2 md:px-8">
-          <Outlet />
-        </main>
+
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+             <NavBar
+                showMobileMenu={showMobileMenu}
+                handleMobileMenuToggle={handleMobileMenuToggle}
+             />
+             
+             <main className="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth">
+                <div className="max-w-7xl mx-auto h-full">
+                     <Outlet />
+                </div>
+             </main>
+        </div>
       </div>
     </NotificationProvider>
   );
