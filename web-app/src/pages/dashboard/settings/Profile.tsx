@@ -1,11 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import Button from "@/components/Button";
-import Spinner from "@/components/Spinner";
-import LucideIcon from "@/components/LucideIcon";
+import { toast } from "react-toastify";
+import { Camera, User, Lock, Mail, Shield, Save, Loader2 } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -18,200 +17,261 @@ import { Input } from "@/components/ui/input";
 import Breadcrumb from "@/components/Breadcrumb";
 import ChangePassword from "@/components/settings/tabs/change-password";
 import ProfilePlaceholder from "@/assets/profile-placeholder.png";
+import { useUserProfileInfo } from "@/hooks/useUserProfile";
+import { apiBaseUrl } from "@/constants";
+
 const formSchema = z.object({
   username: z
     .string()
     .min(2, { message: "Username must be at least 2 characters long" }),
   email: z.string().email({ message: "Invalid email address" }),
   profile: z.object({
-    role_display: z.string(),
-    profile_image: z.instanceof(File).refine((file) => file.size < 7000000, {
-      message: "Your resume must be less than 7MB.",
-    }),
+    role_display: z.string().optional(),
+    profile_image: z.any().optional(),
   }),
 });
 
-// Fake profile data for demonstration
-const fakeProfile = {
-  username: "johndoe",
-  email: "johndoe@example.com",
-  profile: {
-    role_display: "Member",
-    profile_image: "",
-  },
-};
-
 const Profile = () => {
-  const [profile, setProfile] = useState(fakeProfile);
+  const { profile: userProfile } = useUserProfileInfo();
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState("");
   const imageInputRef = useRef<HTMLInputElement | null>(null);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+         username: "",
+         email: "",
+         profile: { role_display: "", profile_image: "" }
+    },
+  });
+
+  useEffect(() => {
+    if (userProfile) {
+        form.reset({
+            username: userProfile.username || "",
+            email: userProfile.email || "",
+            profile: {
+                role_display: userProfile.profile?.role_display || "",
+                profile_image: userProfile.profile?.profile_image || "",
+            }
+        });
+    }
+  }, [userProfile, form]);
 
   const handleImageUpdate = () => {
     imageInputRef.current?.click();
   };
 
-  const form = useForm<any>({
-    resolver: zodResolver(formSchema),
-    defaultValues: fakeProfile,
-    values: profile,
-  });
-
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
+      if (file.size > 7000000) {
+          toast.error("Image size must be less than 7MB");
+          return;
+      }
       const imageUrl = URL.createObjectURL(file);
       setPreview(imageUrl);
-      // form.setValue('profile.profile_image', file)
+      form.setValue('profile.profile_image', file, { shouldDirty: true });
     }
   };
 
-  // Simulate profile update
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoading(true);
+    // Simulation for now
     setTimeout(() => {
-      setProfile(values);
       setLoading(false);
-      alert("Profile updated (fake)");
+      toast.success("Profile updated successfully");
+      console.log(values);
     }, 1000);
   };
 
   return (
-    <div className="max-w-full mx-auto mt-6 px-4">
+    <div className="container mx-auto px-4 py-6 max-w-7xl animate-fade-in">
       <Breadcrumb
-        title="Profile"
-        description="Your account information and preferences"
-        homePath="/"
+        title="Settings"
+        description="Manage your account settings and preferences."
+        homePath="/dashboard"
       />
-      <Tabs
-        defaultValue="profile-info"
-        className="w-full mt-4 flex flex-col md:flex-row gap-6"
-      >
-        <TabsList className="w-full md:w-1/4 h-full flex flex-col !justify-start !items-start p-3 bg-white dark:bg-blue-950 rounded-xl border border-slate-200 dark:border-blue-700">
-          <TabsTrigger
-            value="profile-info"
-            className="mb-2 w-full justify-start"
-          >
-            Profile Info
-          </TabsTrigger>
-          <TabsTrigger
-            value="change-password"
-            className="mb-2 w-full justify-start"
-          >
-            Change Password
-          </TabsTrigger>
-        </TabsList>
-        <div className="w-full md:w-3/4 rounded-xl bg-white dark:bg-blue-950 border border-slate-200 dark:border-blue-700 shadow-sm p-4">
-          <TabsContent value="profile-info">
-            <Form {...form}>
-              <form
-                className="space-y-5"
-                onSubmit={form.handleSubmit(onSubmit)}
-              >
-                <div className="relative flex flex-col items-center">
-                  <img
-                    src={
-                      preview
-                        ? preview
-                        : profile?.profile.profile_image
-                        ? profile?.profile.profile_image
-                        : ProfilePlaceholder
-                    }
-                    alt="profile image"
-                    className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border border-slate-200 dark:border-blue-700"
-                  />
-                  <LucideIcon
-                    name="Camera"
-                    className="absolute bottom-2 right-10 cursor-pointer bg-white dark:bg-blue-900 rounded-full p-2 shadow ring-1 ring-black/5"
-                    onClick={handleImageUpdate}
-                  />
-                </div>
-                <FormField
-                  control={form.control}
-                  name="profile.profile_image"
-                  render={({ field: { value, onChange, ...fieldProps } }) => (
-                    <FormItem>
-                      <FormLabel>Profile Image</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder=""
-                          {...fieldProps}
-                          accept="image/*"
-                          type="file"
-                          onChange={handleImageUpload}
-                          ref={imageInputRef}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="username"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Username</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder=""
-                          {...field}
-                          className="!focus-visible:ring-0 !focus-visible:ring-offset-0"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder=""
-                          {...field}
-                          className="!focus-visible:ring-0 !focus-visible:ring-offset-0"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="profile.role_display"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Role</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder=""
-                          {...field}
-                          disabled
-                          className="!focus-visible:ring-0 !focus-visible:ring-offset-0 cursor-not-allowed"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  type="submit"
-                  text={loading ? <Spinner /> : "Update Profile"}
-                  className="w-full"
-                  variant="primary"
-                />
-              </form>
-            </Form>
-          </TabsContent>
-          <TabsContent value="change-password">
-            <ChangePassword />
-          </TabsContent>
-        </div>
-      </Tabs>
+      
+      <div className="mt-8">
+          <Tabs defaultValue="profile-info" className="flex flex-col lg:flex-row gap-8">
+            <aside className="w-full lg:w-64 flex-shrink-0">
+                <TabsList className="flex flex-col h-auto w-full bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-2 space-y-1 shadow-sm">
+                    <TabsTrigger 
+                        value="profile-info"
+                        className="w-full justify-start px-3 py-2.5 text-sm font-medium rounded-lg data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 dark:data-[state=active]:bg-blue-900/20 dark:data-[state=active]:text-blue-400 transition-all duration-200"
+                    >
+                        <User className="w-4 h-4 mr-3" />
+                        Profile Information
+                    </TabsTrigger>
+                     <TabsTrigger 
+                        value="change-password"
+                        className="w-full justify-start px-3 py-2.5 text-sm font-medium rounded-lg data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 dark:data-[state=active]:bg-blue-900/20 dark:data-[state=active]:text-blue-400 transition-all duration-200"
+                    >
+                        <Lock className="w-4 h-4 mr-3" />
+                        Security
+                    </TabsTrigger>
+                </TabsList>
+            </aside>
+
+            <div className="flex-1">
+                 <TabsContent value="profile-info" className="mt-0">
+                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Profile Details</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">Update your photo and personal details here.</p>
+                        </div>
+                        
+                        <div className="p-6">
+                            <Form {...form}>
+                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                                    
+                                    {/* Profile Image Section */}
+                                    <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-slate-100 dark:border-slate-800">
+                                        <div className="relative group">
+                                            <div className="w-24 h-24 rounded-full p-1 ring-2 ring-slate-100 dark:ring-slate-800 overflow-hidden bg-slate-50 dark:bg-slate-800">
+                                                 <img
+                                                    src={
+                                                        preview
+                                                          ? preview
+                                                          : userProfile?.profile?.profile_image
+                                                          ? `${apiBaseUrl}${userProfile?.profile?.profile_image}`
+                                                          : ProfilePlaceholder
+                                                      }
+                                                    alt="Profile"
+                                                    className="w-full h-full rounded-full object-cover"
+                                                />
+                                            </div>
+                                            <div 
+                                                onClick={handleImageUpdate}
+                                                className="absolute bottom-0 right-0 p-1.5 bg-blue-600 text-white rounded-full cursor-pointer shadow-lg hover:bg-blue-700 transition-colors"
+                                            >
+                                                <Camera className="w-4 h-4" />
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 text-center sm:text-left">
+                                            <h4 className="font-medium text-slate-900 dark:text-white">Profile Photo</h4>
+                                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 mb-3">
+                                                This will be displayed on your profile.
+                                            </p>
+                                             <div className="hidden">
+                                                 <FormField
+                                                  control={form.control}
+                                                  name="profile.profile_image"
+                                                  render={({ field: { value, onChange, ...fieldProps } }) => (
+                                                    <FormItem>
+                                                      <FormControl>
+                                                        <Input
+                                                          {...fieldProps}
+                                                          accept="image/*"
+                                                          type="file"
+                                                          onChange={handleImageUpload}
+                                                          ref={imageInputRef}
+                                                        />
+                                                      </FormControl>
+                                                    </FormItem>
+                                                  )}
+                                                />
+                                             </div>
+                                            <button 
+                                                type="button"
+                                                onClick={handleImageUpdate}
+                                                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium hover:underline"
+                                            >
+                                                Change photo
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid gap-6 md:grid-cols-2">
+                                        <FormField
+                                            control={form.control}
+                                            name="username"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-slate-700 dark:text-slate-300">Username</FormLabel>
+                                                    <FormControl>
+                                                        <div className="relative">
+                                                             <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                             <Input {...field} className="pl-10" placeholder="johndoe" />
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="email"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-slate-700 dark:text-slate-300">Email Address</FormLabel>
+                                                    <FormControl>
+                                                        <div className="relative">
+                                                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                             <Input {...field} className="pl-10" placeholder="john@example.com" />
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                         <FormField
+                                            control={form.control}
+                                            name="profile.role_display"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-slate-700 dark:text-slate-300">Role</FormLabel>
+                                                    <FormControl>
+                                                        <div className="relative">
+                                                             <Shield className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                             <Input {...field} disabled className="pl-10 bg-slate-50 dark:bg-slate-800 text-slate-500 cursor-not-allowed" />
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className="flex justify-end pt-4 border-t border-slate-100 dark:border-slate-800">
+                                        <button
+                                            type="submit"
+                                            disabled={loading || !form.formState.isDirty}
+                                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition-all
+                                              ${loading || !form.formState.isDirty
+                                                 ? "bg-slate-300 dark:bg-slate-700 cursor-not-allowed" 
+                                                 : "bg-blue-600 hover:bg-blue-700 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                                              }`}
+                                        >
+                                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                            Save Changes
+                                        </button>
+                                    </div>
+
+                                </form>
+                            </Form>
+                        </div>
+                    </div>
+                 </TabsContent>
+
+                 <TabsContent value="change-password" className="mt-0">
+                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                         <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Security Settings</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">Manage your password and security preferences.</p>
+                        </div>
+                        <div className="p-6">
+                             <ChangePassword />
+                        </div>
+                    </div>
+                 </TabsContent>
+            </div>
+          </Tabs>
+      </div>
     </div>
   );
 };

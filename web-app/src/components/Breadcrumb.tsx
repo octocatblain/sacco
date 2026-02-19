@@ -20,7 +20,7 @@ const formatLabel = (segment: string) => {
 export default function Breadcrumb({
   title,
   description,
-  homePath = "/",
+  homePath = "/dashboard",
 }: BreadcrumbProps) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -33,12 +33,15 @@ export default function Breadcrumb({
 
   useEffect(() => {
     document.title = title ? `${title} | K2AN SLMS` : "K2AN SLMS";
-    const next: Crumb[] = segments.map((part, index) => {
+    const next: Crumb[] = segments.reduce((acc, part, index) => {
       const href = "/" + segments.slice(0, index + 1).join("/");
-      return { href, label: formatLabel(part) };
-    });
+      if (part !== "dashboard") {
+        acc.push({ href, label: formatLabel(part) });
+      }
+      return acc;
+    }, [] as Crumb[]);
     setCrumbs(next);
-  }, [segments]);
+  }, [segments, title]);
 
   const redirect = (path: string) => navigate(path);
 
